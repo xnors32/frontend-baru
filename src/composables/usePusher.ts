@@ -2,10 +2,12 @@ import { onMounted, onUnmounted } from 'vue'
 import Pusher from 'pusher-js'
 import { useToast } from './useToast'
 import { useAuthStore } from '@/stores/auth'
+import { useNotificationStore } from '@/stores/notifications'
 
 export function usePusher() {
   const toast = useToast()
   const auth = useAuthStore()
+  const notif = useNotificationStore()
 
   let pusher: Pusher | null = null
   let channel: ReturnType<typeof pusher.subscribe> | null = null
@@ -19,9 +21,17 @@ export function usePusher() {
 
     channel = pusher.subscribe('notifications')
 
-    channel.bind('peminjaman-updated', (data: { message: string; userId: number }) => {
+    channel.bind('peminjaman-new', (data: { message: string; peminjamanId: number }) => {
+      if (auth.user && ['ADMIN', 'PETUGAS'].includes(auth.user.role)) {
+        toast.show(data.message, 'info')
+        notif.add({ message: data.message, type: 'peminjaman-new', peminjamanId: data.peminjamanId })
+      }
+    })
+
+    channel.bind('peminjaman-updated', (data: { message: string; userId: number; peminjamanId: number }) => {
       if (data.userId === auth.user?.idUser) {
         toast.show(data.message, 'info')
+        notif.add({ message: data.message, type: 'peminjaman-updated', peminjamanId: data.peminjamanId })
       }
     })
   }
