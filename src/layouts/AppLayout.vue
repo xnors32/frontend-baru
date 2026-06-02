@@ -4,6 +4,7 @@ import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import ThemeToggle from '@/components/ui/ThemeToggle.vue'
 import { capitalize } from '@/utils/format'
+import { usePusher } from '@/composables/usePusher'
 import {
   LayoutDashboard,
   Package,
@@ -35,6 +36,8 @@ const navItems = computed(() =>
     (item) => !item.roles || (auth.user && item.roles.includes(auth.user.role)),
   ),
 )
+
+usePusher()
 
 function isActive(name: string) {
   if (name === 'dashboard') return route.name === 'dashboard'
