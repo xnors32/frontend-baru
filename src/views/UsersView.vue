@@ -9,6 +9,7 @@ import RoleBadge from '@/components/ui/RoleBadge.vue'
 import Modal from '@/components/ui/Modal.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import { useAutoRefresh } from '@/composables/useAutoRefresh'
+import { capitalize } from '@/utils/format'
 import type { User } from '@/types/api'
 import { Trash2 } from '@lucide/vue'
 
@@ -86,7 +87,7 @@ useAutoRefresh(() => load(true))
         class="border-b border-slate-100 last:border-0 transition-colors hover:bg-slate-50/80 dark:border-slate-800 dark:hover:bg-slate-800/40"
       >
         <td class="px-4 sm:px-5 py-3 sm:py-4 text-center text-slate-600 dark:text-slate-400">{{ index + 1 }}</td>
-        <td class="px-4 sm:px-5 py-3 sm:py-4 font-medium text-slate-900 dark:text-white">{{ u.nama }}</td>
+        <td class="px-4 sm:px-5 py-3 sm:py-4 font-medium text-slate-900 dark:text-white">{{ capitalize(u.nama) }}</td>
         <td class="px-4 sm:px-5 py-3 sm:py-4 text-slate-600 dark:text-slate-300">{{ u.email }}</td>
         <td class="px-4 sm:px-5 py-3 sm:py-4">
           <RoleBadge :role="u.role" />

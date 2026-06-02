@@ -8,7 +8,7 @@ import { useAutoRefresh } from '@/composables/useAutoRefresh'
 import StatCard from '@/components/ui/StatCard.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import StatusBadge from '@/components/ui/StatusBadge.vue'
-import { formatDate, formatRupiah } from '@/utils/format'
+import { formatDate, formatRupiah, capitalize } from '@/utils/format'
 import type { Barang, Peminjaman } from '@/types/api'
 import {
   Package,
@@ -144,7 +144,7 @@ useAutoRefresh(() => load(true))
             >
               <div>
                 <p class="font-medium text-sm">
-                  #{{ p.idPeminjaman }} — {{ p.peminjam.nama }}
+                  #{{ p.idPeminjaman }} — {{ capitalize(p.peminjam.nama) }}
                 </p>
                 <p class="text-xs text-slate-500 mt-0.5">
                   {{ formatDate(p.tglPinjam) }} → {{ formatDate(p.tglKembali) }}

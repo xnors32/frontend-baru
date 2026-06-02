@@ -29,3 +29,12 @@ export function formatDateTime(value: string | null | undefined): string {
     minute: '2-digit',
   })
 }
+
+export function capitalize(value: string | null | undefined): string {
+  if (!value) return '—'
+  return value
+    .toLowerCase()
+    .split(' ')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ')
+}

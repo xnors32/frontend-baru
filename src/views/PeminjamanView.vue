@@ -10,7 +10,7 @@ import Modal from '@/components/ui/Modal.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import StatusBadge from '@/components/ui/StatusBadge.vue'
-import { formatDate, formatRupiah } from '@/utils/format'
+import { formatDate, formatRupiah, capitalize } from '@/utils/format'
 import type { Barang, DetailPeminjamanPayload, Peminjaman, PeminjamanPayload } from '@/types/api'
 import { ClipboardList, Plus, Filter } from '@lucide/vue'
 
@@ -165,7 +165,7 @@ useAutoRefresh(() => load(true))
             #{{ p.idPeminjaman }}
           </div>
           <div>
-            <p class="font-semibold">{{ p.peminjam.nama }}</p>
+            <p class="font-semibold">{{ capitalize(p.peminjam.nama) }}</p>
             <p class="text-xs text-slate-500 mt-1">
               {{ formatDate(p.tglPinjam) }} — {{ formatDate(p.tglKembali) }}
               · {{ p.details?.length ?? 0 }} item

@@ -7,7 +7,7 @@ import { useToast } from '@/composables/useToast'
 import { useAutoRefresh } from '@/composables/useAutoRefresh'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import StatusBadge from '@/components/ui/StatusBadge.vue'
-import { formatDate, formatRupiah } from '@/utils/format'
+import { formatDate, formatRupiah, capitalize } from '@/utils/format'
 import type { Kondisi, Peminjaman, ReturnDetailPayload } from '@/types/api'
 import {
   ArrowLeft,
@@ -160,7 +160,7 @@ useAutoRefresh(() => load(true), 15000)
               <User class="h-3.5 w-3.5" />
               Peminjam
             </div>
-            <p class="mt-2 font-medium">{{ peminjaman.peminjam.nama }}</p>
+            <p class="mt-2 font-medium">{{ capitalize(peminjaman.peminjam.nama) }}</p>
             <p class="text-xs text-slate-500">{{ peminjaman.peminjam.email }}</p>
           </div>
           <div class="rounded-xl bg-slate-50/80 p-4 dark:bg-slate-800/50">

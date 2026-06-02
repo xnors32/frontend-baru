@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import ThemeToggle from '@/components/ui/ThemeToggle.vue'
+import { capitalize } from '@/utils/format'
 import {
   LayoutDashboard,
   Package,
@@ -109,7 +110,7 @@ function logout() {
       <div class="border-t border-slate-200/60 p-4 dark:border-slate-700/50">
         <div class="mb-3 rounded-xl bg-slate-100/80 px-4 py-3 dark:bg-slate-800/60">
           <p class="text-xs text-slate-500">Masuk sebagai</p>
-          <p class="font-semibold text-sm truncate">{{ auth.user?.nama }}</p>
+          <p class="font-semibold text-sm truncate">{{ capitalize(auth.user?.nama) }}</p>
           <span
             class="mt-1 inline-block rounded-md bg-lab-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-lab-700 dark:text-lab-300"
           >
@@ -141,7 +142,7 @@ function logout() {
         <div class="flex-1 min-w-0">
           <p class="text-xs text-slate-500 hidden sm:block">Selamat datang kembali</p>
           <p class="font-display font-semibold text-sm sm:text-base text-slate-900 dark:text-white truncate">
-            {{ auth.user?.nama }}
+            {{ capitalize(auth.user?.nama) }}
           </p>
         </div>
         <ThemeToggle />
