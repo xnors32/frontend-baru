@@ -20,11 +20,11 @@ const deleteModalOpen = ref(false)
 const userToDelete = ref<User | null>(null)
 
 const columns = [
-  { key: 'no', label: 'No', class: 'w-16' },
+  { key: 'no', label: 'No', class: 'w-16 text-center' },
   { key: 'nama', label: 'Nama Pengguna' },
   { key: 'email', label: 'Email' },
   { key: 'role', label: 'Hak Akses Role' },
-  { key: 'aksi', label: 'Aksi', class: 'w-20' },
+  { key: 'aksi', label: 'Aksi', class: 'w-20 text-center' },
 ]
 
 async function load(silent = false) {
@@ -85,13 +85,13 @@ useAutoRefresh(() => load(true))
         :key="u.idUser"
         class="border-b border-slate-100 last:border-0 transition-colors hover:bg-slate-50/80 dark:border-slate-800 dark:hover:bg-slate-800/40"
       >
-        <td class="px-5 py-4 text-slate-600 dark:text-slate-400">{{ index + 1 }}</td>
-        <td class="px-5 py-4 font-medium text-slate-900 dark:text-white">{{ u.nama }}</td>
-        <td class="px-5 py-4 text-slate-600 dark:text-slate-300">{{ u.email }}</td>
-        <td class="px-5 py-4">
+        <td class="px-4 sm:px-5 py-3 sm:py-4 text-center text-slate-600 dark:text-slate-400">{{ index + 1 }}</td>
+        <td class="px-4 sm:px-5 py-3 sm:py-4 font-medium text-slate-900 dark:text-white">{{ u.nama }}</td>
+        <td class="px-4 sm:px-5 py-3 sm:py-4 text-slate-600 dark:text-slate-300">{{ u.email }}</td>
+        <td class="px-4 sm:px-5 py-3 sm:py-4">
           <RoleBadge :role="u.role" />
         </td>
-        <td class="px-5 py-4">
+        <td class="px-4 sm:px-5 py-3 sm:py-4 text-center">
           <button
             type="button"
             class="rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 transition-colors disabled:opacity-40 disabled:pointer-events-none"

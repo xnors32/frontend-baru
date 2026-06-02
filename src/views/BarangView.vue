@@ -37,7 +37,7 @@ const form = ref<BarangPayload>({
 
 const columns = computed(() => {
   const base = [
-    { key: 'no', label: 'No', class: 'w-14' },
+    { key: 'no', label: 'No', class: 'w-14 text-center' },
     { key: 'kode', label: 'Kode' },
     { key: 'nama', label: 'Nama Barang' },
     { key: 'kategori', label: 'Kategori' },
@@ -47,7 +47,7 @@ const columns = computed(() => {
     { key: 'kondisi', label: 'Kondisi' },
   ]
   if (auth.isAdmin) {
-    base.push({ key: 'aksi', label: 'Aksi', class: 'w-24' })
+    base.push({ key: 'aksi', label: 'Aksi', class: 'w-24 text-center' })
   }
   return base
 })
@@ -195,48 +195,48 @@ useAutoRefresh(() => load(true))
         :key="b.idBarang"
         class="border-b border-slate-100 last:border-0 transition-colors hover:bg-slate-50/80 dark:border-slate-800 dark:hover:bg-slate-800/40"
       >
-        <td class="px-5 py-4 text-slate-600 dark:text-slate-400">{{ index + 1 }}</td>
-        <td class="px-5 py-4 font-mono text-xs font-semibold text-lab-700 dark:text-lab-400">
+        <td class="px-4 sm:px-5 py-3 sm:py-4 text-center text-slate-600 dark:text-slate-400">{{ index + 1 }}</td>
+        <td class="px-4 sm:px-5 py-3 sm:py-4 font-mono text-xs font-semibold text-lab-700 dark:text-lab-400">
           {{ b.kodeBarang }}
         </td>
-        <td class="px-5 py-4 font-medium text-slate-900 dark:text-white">
+        <td class="px-4 sm:px-5 py-3 sm:py-4 font-medium text-slate-900 dark:text-white">
           {{ b.namaBarang }}
         </td>
-        <td class="px-5 py-4 text-slate-600 dark:text-slate-300">
+        <td class="px-4 sm:px-5 py-3 sm:py-4 text-slate-600 dark:text-slate-300">
           {{ b.namaKategori ?? '—' }}
         </td>
-        <td class="px-5 py-4">
+        <td class="px-4 sm:px-5 py-3 sm:py-4">
           <span class="font-semibold text-lab-600 dark:text-lab-400">{{ b.jumlahTersedia }}</span>
           <span class="text-slate-400 text-xs"> / {{ b.jumlahTotal }}</span>
         </td>
-        <td class="px-5 py-4 font-medium text-emerald-700 dark:text-emerald-400 whitespace-nowrap">
+        <td class="px-4 sm:px-5 py-3 sm:py-4 font-medium text-emerald-700 dark:text-emerald-400 whitespace-nowrap">
           {{ formatRupiah(b.harga) }}
         </td>
-        <td class="px-5 py-4 text-slate-600 dark:text-slate-300">
+        <td class="px-4 sm:px-5 py-3 sm:py-4 text-slate-600 dark:text-slate-300">
           {{ b.lokasi || '—' }}
         </td>
-        <td class="px-5 py-4">
+        <td class="px-4 sm:px-5 py-3 sm:py-4">
           <span class="rounded-md bg-slate-100 px-2 py-1 text-xs dark:bg-slate-800">
             {{ b.kondisi }}
           </span>
         </td>
-        <td v-if="auth.isAdmin" class="px-5 py-4">
-          <div class="flex items-center gap-2">
+        <td v-if="auth.isAdmin" class="px-4 sm:px-5 py-3 sm:py-4">
+          <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
             <button
               type="button"
-              class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-lab-600 dark:hover:bg-slate-800"
+              class="w-full sm:w-auto rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-lab-600 dark:hover:bg-slate-800"
               title="Edit"
               @click="openEdit(b)"
             >
-              <Pencil class="h-4 w-4" />
+              <Pencil class="h-4 w-4 mx-auto" />
             </button>
             <button
               type="button"
-              class="rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40"
+              class="w-full sm:w-auto rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40"
               title="Hapus"
               @click="remove(b.idBarang)"
             >
-              <Trash2 class="h-4 w-4" />
+              <Trash2 class="h-4 w-4 mx-auto" />
             </button>
           </div>
         </td>
