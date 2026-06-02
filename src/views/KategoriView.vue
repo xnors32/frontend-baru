@@ -135,14 +135,14 @@ useAutoRefresh(() => load(true))
         :key="k.idKategori"
         class="border-b border-slate-100 last:border-0 transition-colors hover:bg-slate-50/80 dark:border-slate-800 dark:hover:bg-slate-800/40"
       >
-        <td class="px-5 py-4 text-center text-slate-600 dark:text-slate-400">{{ index + 1 }}</td>
-        <td class="px-5 py-4 font-medium text-slate-900 dark:text-white">
+        <td class="px-4 sm:px-5 py-3 sm:py-4 text-center text-slate-600 dark:text-slate-400">{{ index + 1 }}</td>
+        <td class="px-4 sm:px-5 py-3 sm:py-4 font-medium text-slate-900 dark:text-white">
           {{ k.namaKategori }}
         </td>
-        <td class="px-5 py-4 text-slate-600 dark:text-slate-300">
+        <td class="px-4 sm:px-5 py-3 sm:py-4 text-slate-600 dark:text-slate-300">
           {{ k.deskripsi || '—' }}
         </td>
-        <td v-if="auth.isAdmin" class="px-3 sm:px-5 py-4">
+        <td v-if="auth.isAdmin" class="px-4 sm:px-5 py-3 sm:py-4">
           <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
             <button
               type="button"

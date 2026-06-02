@@ -7,14 +7,14 @@ defineProps<{
 
 <template>
   <div class="glass rounded-xl sm:rounded-2xl overflow-hidden animate-fade-in">
-    <div class="overflow-x-auto -mx-4 sm:mx-0">
-      <table class="w-full min-w-full sm:min-w-[640px] text-left text-xs sm:text-sm">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs sm:text-sm">
         <thead>
           <tr class="border-b border-slate-200/80 dark:border-slate-700/80">
             <th
               v-for="col in columns"
               :key="col.key"
-              class="px-3 sm:px-5 py-3 sm:py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+              class="px-4 sm:px-5 py-3 sm:py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 whitespace-nowrap"
               :class="col.class"
             >
               {{ col.label }}
