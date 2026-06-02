@@ -220,15 +220,15 @@ watch(refreshKey, () => load(true))
                   {{ b.namaBarang }}
                 </option>
               </select>
-              <p v-if="d.idBarang" class="text-[10px] text-slate-400 mt-1 ml-1 not-italic">
+              <p v-if="d.idBarang" class="text-[10px] text-slate-400 mt-1">
                 Stok: {{ barangList.find(b => b.idBarang === d.idBarang)?.jumlahTersedia ?? '—' }}
                 · {{ formatRupiah(barangList.find(b => b.idBarang === d.idBarang)?.harga ?? 0) }}
               </p>
             </div>
             <div class="flex items-center gap-2 shrink-0">
               <div>
-                <label class="text-[10px] text-slate-400 block mb-0.5 not-italic">Jml</label>
-                <input v-model.number="d.jumlah" type="number" min="1" class="w-16 rounded-lg border py-2 px-2 text-sm text-center not-italic dark:border-slate-700 dark:bg-slate-900/50" />
+                <label class="text-[10px] text-slate-400 block mb-0.5">Jml</label>
+                <input v-model.number="d.jumlah" type="number" min="1" class="w-20 rounded-lg border py-2 px-2 text-sm dark:border-slate-700 dark:bg-slate-900/50" />
               </div>
               <button
                 v-if="form.details.length > 1"
