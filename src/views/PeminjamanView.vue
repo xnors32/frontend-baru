@@ -212,33 +212,42 @@ watch(refreshKey, () => load(true))
           <div
             v-for="(d, i) in form.details"
             :key="i"
-            class="flex items-start gap-2 mb-2 rounded-xl border border-slate-200 p-3 dark:border-slate-700"
+            class="rounded-xl border border-slate-200 p-3 dark:border-slate-700"
           >
-            <div class="flex-1 min-w-0">
-              <select v-model.number="d.idBarang" class="w-full rounded-lg border py-2 px-3 text-sm not-italic dark:border-slate-700 dark:bg-slate-900/50">
-                <option v-for="b in barangList" :key="b.idBarang" :value="b.idBarang" class="py-1 not-italic">
-                  {{ b.namaBarang }}
-                </option>
-              </select>
-              <p v-if="d.idBarang" class="text-[10px] text-slate-400 mt-1">
+            <div class="flex items-start gap-2">
+              <div class="flex-1 min-w-0">
+                <select v-model.number="d.idBarang" class="w-full rounded-lg border py-2 px-3 text-sm dark:border-slate-700 dark:bg-slate-900/50">
+                  <option v-for="b in barangList" :key="b.idBarang" :value="b.idBarang" class="py-1">
+                    {{ b.namaBarang }}
+                  </option>
+                </select>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <div>
+                  <input
+                    v-model.number="d.jumlah"
+                    type="number"
+                    min="1"
+                    placeholder="Jml"
+                    class="w-20 rounded-lg border py-2 px-2 text-sm dark:border-slate-700 dark:bg-slate-900/50"
+                  />
+                </div>
+                <button
+                  v-if="form.details.length > 1"
+                  type="button"
+                  class="rounded-lg p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-colors"
+                  @click="removeDetailRow(i)"
+                  title="Hapus"
+                >
+                  <Trash2 class="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+            <div v-if="d.idBarang" class="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+              <p class="text-[10px] text-slate-400">
                 Stok: {{ barangList.find(b => b.idBarang === d.idBarang)?.jumlahTersedia ?? '—' }}
                 · {{ formatRupiah(barangList.find(b => b.idBarang === d.idBarang)?.harga ?? 0) }}
               </p>
-            </div>
-            <div class="flex items-center gap-2 shrink-0">
-              <div>
-                <label class="text-[10px] text-slate-400 block mb-0.5">Jml</label>
-                <input v-model.number="d.jumlah" type="number" min="1" class="w-20 rounded-lg border py-2 px-2 text-sm dark:border-slate-700 dark:bg-slate-900/50" />
-              </div>
-              <button
-                v-if="form.details.length > 1"
-                type="button"
-                class="mt-5 rounded-lg p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-colors"
-                @click="removeDetailRow(i)"
-                title="Hapus"
-              >
-                <Trash2 class="h-4 w-4" />
-              </button>
             </div>
           </div>
         </div>
