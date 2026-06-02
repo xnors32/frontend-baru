@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { usersApi } from '@/api/users'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
@@ -9,6 +9,7 @@ import RoleBadge from '@/components/ui/RoleBadge.vue'
 import Modal from '@/components/ui/Modal.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import { useAutoRefresh } from '@/composables/useAutoRefresh'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 import { capitalize } from '@/utils/format'
 import type { User } from '@/types/api'
 import { Trash2 } from '@lucide/vue'
@@ -66,6 +67,8 @@ async function confirmDelete() {
 
 onMounted(load)
 useAutoRefresh(() => load(true))
+const { refreshKey } = useRealtimeRefresh()
+watch(refreshKey, () => load(true))
 </script>
 
 <template>

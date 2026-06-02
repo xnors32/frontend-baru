@@ -171,10 +171,10 @@ function logout() {
           >
             <Bell class="h-5 w-5 text-slate-600 dark:text-slate-400" />
             <span
-              v-if="notif.unreadCount() > 0"
+              v-if="notif.unreadCount > 0"
               class="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white"
             >
-              {{ notif.unreadCount() }}
+              {{ notif.unreadCount }}
             </span>
           </button>
 
@@ -186,7 +186,7 @@ function logout() {
               <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200/60 dark:border-slate-700/60">
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Notifikasi</p>
                 <button
-                  v-if="notif.unreadCount() > 0"
+                  v-if="notif.unreadCount > 0"
                   type="button"
                   class="text-xs font-medium text-lab-600 hover:text-lab-500"
                   @click="notif.markAllRead()"

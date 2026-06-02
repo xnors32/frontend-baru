@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { peminjamanApi } from '@/api/peminjaman'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
 import { useAutoRefresh } from '@/composables/useAutoRefresh'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import StatusBadge from '@/components/ui/StatusBadge.vue'
 import { formatDate, formatRupiah, capitalize } from '@/utils/format'
@@ -92,6 +93,8 @@ async function doReturn() {
 
 onMounted(load)
 useAutoRefresh(() => load(true), 15000)
+const { refreshKey } = useRealtimeRefresh()
+watch(refreshKey, () => load(true))
 </script>
 
 <template>

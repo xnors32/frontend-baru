@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 export interface AppNotification {
   id: number
@@ -28,9 +28,7 @@ export const useNotificationStore = defineStore('notifications', () => {
     items.value.forEach((n) => (n.read = true))
   }
 
-  function unreadCount() {
-    return items.value.filter((n) => !n.read).length
-  }
+  const unreadCount = computed(() => items.value.filter((n) => !n.read).length)
 
   return { items, add, markAllRead, unreadCount }
 })

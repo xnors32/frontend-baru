@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { barangApi } from '@/api/barang'
 import { peminjamanApi } from '@/api/peminjaman'
 import { useAuthStore } from '@/stores/auth'
 import { useAutoRefresh } from '@/composables/useAutoRefresh'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 import StatCard from '@/components/ui/StatCard.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import StatusBadge from '@/components/ui/StatusBadge.vue'
@@ -67,6 +68,8 @@ async function load(silent = false) {
 
 onMounted(load)
 useAutoRefresh(() => load(true))
+const { refreshKey } = useRealtimeRefresh()
+watch(refreshKey, () => load(true))
 </script>
 
 <template>
