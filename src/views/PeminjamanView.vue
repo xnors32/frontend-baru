@@ -215,20 +215,20 @@ watch(refreshKey, () => load(true))
             class="flex items-start gap-2 mb-2 rounded-xl border border-slate-200 p-3 dark:border-slate-700"
           >
             <div class="flex-1 min-w-0">
-              <select v-model.number="d.idBarang" class="w-full rounded-lg border py-2 px-3 text-sm dark:border-slate-700 dark:bg-slate-900/50">
-                <option v-for="b in barangList" :key="b.idBarang" :value="b.idBarang" class="py-1">
+              <select v-model.number="d.idBarang" class="w-full rounded-lg border py-2 px-3 text-sm not-italic dark:border-slate-700 dark:bg-slate-900/50">
+                <option v-for="b in barangList" :key="b.idBarang" :value="b.idBarang" class="py-1 not-italic">
                   {{ b.namaBarang }}
                 </option>
               </select>
-              <p v-if="d.idBarang" class="text-[10px] text-slate-400 mt-1 ml-1">
+              <p v-if="d.idBarang" class="text-[10px] text-slate-400 mt-1 ml-1 not-italic">
                 Stok: {{ barangList.find(b => b.idBarang === d.idBarang)?.jumlahTersedia ?? '—' }}
                 · {{ formatRupiah(barangList.find(b => b.idBarang === d.idBarang)?.harga ?? 0) }}
               </p>
             </div>
             <div class="flex items-center gap-2 shrink-0">
               <div>
-                <label class="text-[10px] text-slate-400 block mb-0.5">Jml</label>
-                <input v-model.number="d.jumlah" type="number" min="1" class="w-16 rounded-lg border py-2 px-2 text-sm text-center dark:border-slate-700 dark:bg-slate-900/50" />
+                <label class="text-[10px] text-slate-400 block mb-0.5 not-italic">Jml</label>
+                <input v-model.number="d.jumlah" type="number" min="1" class="w-16 rounded-lg border py-2 px-2 text-sm text-center not-italic dark:border-slate-700 dark:bg-slate-900/50" />
               </div>
               <button
                 v-if="form.details.length > 1"
