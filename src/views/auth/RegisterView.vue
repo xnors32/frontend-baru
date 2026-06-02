@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter, RouterLink } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
 import ThemeToggle from '@/components/ui/ThemeToggle.vue'
 import type { Role } from '@/types/api'
-import { FlaskConical, User, Mail, Lock, ArrowRight, Loader2 } from '@lucide/vue'
+import { FlaskConical, User, Mail, Lock, ArrowRight, Loader2, ArrowLeft } from '@lucide/vue'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -14,10 +14,35 @@ const toast = useToast()
 const nama = ref('')
 const email = ref('')
 const password = ref('')
+const confirmPassword = ref('')
 const role = ref<Role>('MAHASISWA')
 const loading = ref(false)
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
 
-async function submit() {
+async function handleRegister() {
+  // Validation
+  if (!nama.value.trim()) {
+    toast.show('Nama harus diisi', 'error')
+    return
+  }
+  if (!email.value) {
+    toast.show('Email harus diisi', 'error')
+    return
+  }
+  if (!password.value) {
+    toast.show('Password harus diisi', 'error')
+    return
+  }
+  if (password.value.length < 6) {
+    toast.show('Password minimal 6 karakter', 'error')
+    return
+  }
+  if (password.value !== confirmPassword.value) {
+    toast.show('Password tidak sama', 'error')
+    return
+  }
+
   loading.value = true
   try {
     await auth.register({
@@ -26,165 +51,235 @@ async function submit() {
       password: password.value,
       role: role.value,
     })
-    toast.show('Registrasi berhasil! Silakan login.', 'success')
+    toast.show('Daftar berhasil! Silakan login.', 'success')
     router.push('/login')
-  } catch (e) {
-    toast.show(e instanceof Error ? e.message : 'Registrasi gagal', 'error')
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Daftar gagal'
+    toast.show(message, 'error')
   } finally {
     loading.value = false
+  }
+}
+
+function goToLogin() {
+  router.push('/login')
+}
+
+function handleKeyPress(event: KeyboardEvent) {
+  if (event.key === 'Enter' && !loading.value) {
+    handleRegister()
   }
 }
 </script>
 
 <template>
-  <div class="relative flex min-h-dvh items-center justify-center overflow-hidden p-4">
-    <!-- Decorative blobs -->
-    <div
-      class="pointer-events-none absolute -left-32 top-20 h-72 w-72 rounded-full bg-lab-400/20 blur-3xl animate-float"
-    />
-    <div
-      class="pointer-events-none absolute -right-20 bottom-10 h-80 w-80 rounded-full bg-accent-500/15 blur-3xl animate-float"
-      style="animation-delay: -2s"
-    />
+  <div class="min-h-screen bg-gradient-to-br from-lab-50 via-white to-lab-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
+    <!-- Animated background elements -->
+    <div class="absolute top-0 left-0 w-96 h-96 bg-lab-200/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 dark:bg-lab-900/20"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2 dark:bg-blue-900/20"></div>
 
-    <div class="absolute top-4 right-4 z-10">
+    <!-- Theme Toggle -->
+    <div class="absolute top-6 right-6 z-50">
       <ThemeToggle />
     </div>
 
-    <div class="relative grid w-full max-w-5xl gap-8 lg:grid-cols-2 lg:gap-12">
-      <!-- Brand panel -->
-      <div class="hidden lg:flex flex-col justify-center animate-slide-right">
-        <div
-          class="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-lab-500 to-accent-500 text-white shadow-xl shadow-lab-500/25 mb-6"
-        >
-          <FlaskConical class="h-7 w-7" />
+    <!-- Main Container -->
+    <div class="w-full max-w-md relative z-10">
+      <!-- Header -->
+      <div class="text-center mb-8 animate-fade-in">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-lab-600 to-lab-700 shadow-lg mb-4">
+          <FlaskConical class="w-8 h-8 text-white" />
         </div>
-        <h1 class="font-display text-4xl font-bold leading-tight text-slate-900 dark:text-white">
-          Kelola inventaris lab
-          <span class="bg-gradient-to-r from-lab-500 to-accent-500 bg-clip-text text-transparent">
-            lebih cerdas
-          </span>
-        </h1>
-        <p class="mt-4 text-lg text-slate-600 dark:text-slate-400 max-w-md">
-          LabVault menghubungkan stok barang, pengajuan peminjaman, dan persetujuan petugas dalam
-          satu antarmuka yang ringan.
-        </p>
-        <ul class="mt-8 space-y-3 text-sm text-slate-500">
-          <li class="flex items-center gap-2">
-            <span class="h-1.5 w-1.5 rounded-full bg-lab-500" />
-            Real-time stok & ketersediaan
-          </li>
-          <li class="flex items-center gap-2">
-            <span class="h-1.5 w-1.5 rounded-full bg-accent-500" />
-            Alur peminjaman terstruktur
-          </li>
-          <li class="flex items-center gap-2">
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            Role-based: Admin, Petugas, Mahasiswa
-          </li>
-        </ul>
+        <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Inventori Lab</h1>
+        <p class="text-slate-600 dark:text-slate-400">Sistem Manajemen Inventaris Laboratorium</p>
       </div>
 
-      <!-- Form -->
-      <form
-        class="glass-strong rounded-3xl p-8 shadow-2xl animate-fade-up"
-        @submit.prevent="submit"
-      >
-        <div class="mb-8 lg:hidden flex items-center gap-3">
-          <div
-            class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-lab-500 to-accent-500 text-white"
-          >
-            <FlaskConical class="h-5 w-5" />
-          </div>
-          <span class="font-display text-xl font-bold">LabVault</span>
+      <!-- Card -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 p-8 animate-slide-up">
+        <!-- Title -->
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Daftar Akun</h2>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Buat akun baru untuk memulai</p>
         </div>
 
-        <h2 class="font-display text-2xl font-bold text-slate-900 dark:text-white">Daftar</h2>
-        <p class="mt-1 text-sm text-slate-500">Buat akun baru di sistem</p>
-
-        <div class="mt-8 space-y-5">
-          <div>
-            <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Nama
+        <!-- Form -->
+        <form @submit.prevent="handleRegister" class="space-y-4">
+          <!-- Nama Input -->
+          <div class="relative">
+            <label for="nama" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Nama Lengkap
             </label>
             <div class="relative">
-              <User class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <User class="absolute left-3 top-3.5 w-5 h-5 text-slate-400 dark:text-slate-500" />
               <input
+                id="nama"
                 v-model="nama"
+                type="text"
+                placeholder="Nama lengkap Anda"
                 required
-                placeholder="Nama lengkap"
-                class="w-full rounded-xl border border-slate-200 bg-white/80 py-3 pl-10 pr-4 text-sm dark:border-slate-700 dark:bg-slate-900/50"
+                @keypress="handleKeyPress"
+                class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-lab-500 focus:border-transparent transition-all"
               />
             </div>
           </div>
-          <div>
-            <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+
+          <!-- Email Input -->
+          <div class="relative">
+            <label for="email" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Email
             </label>
             <div class="relative">
-              <Mail class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Mail class="absolute left-3 top-3.5 w-5 h-5 text-slate-400 dark:text-slate-500" />
               <input
+                id="email"
                 v-model="email"
                 type="email"
+                placeholder="nama@example.com"
                 required
-                placeholder="nama@email.com"
-                class="w-full rounded-xl border border-slate-200 bg-white/80 py-3 pl-10 pr-4 text-sm dark:border-slate-700 dark:bg-slate-900/50"
+                @keypress="handleKeyPress"
+                class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-lab-500 focus:border-transparent transition-all"
               />
             </div>
           </div>
-          <div>
-            <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+
+          <!-- Password Input -->
+          <div class="relative">
+            <label for="password" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Password
             </label>
             <div class="relative">
-              <Lock class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Lock class="absolute left-3 top-3.5 w-5 h-5 text-slate-400 dark:text-slate-500" />
               <input
+                id="password"
                 v-model="password"
-                type="password"
-                required
-                minlength="6"
+                :type="showPassword ? 'text' : 'password'"
                 placeholder="••••••••"
-                class="w-full rounded-xl border border-slate-200 bg-white/80 py-3 pl-10 pr-4 text-sm dark:border-slate-700 dark:bg-slate-900/50"
+                required
+                @keypress="handleKeyPress"
+                class="w-full pl-10 pr-12 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-lab-500 focus:border-transparent transition-all"
               />
+              <button
+                type="button"
+                @click="showPassword = !showPassword"
+                class="absolute right-3 top-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+              >
+                {{ showPassword ? '🙈' : '👁️' }}
+              </button>
             </div>
           </div>
-          <div>
-            <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Peran
+
+          <!-- Confirm Password Input -->
+          <div class="relative">
+            <label for="confirmPassword" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Konfirmasi Password
+            </label>
+            <div class="relative">
+              <Lock class="absolute left-3 top-3.5 w-5 h-5 text-slate-400 dark:text-slate-500" />
+              <input
+                id="confirmPassword"
+                v-model="confirmPassword"
+                :type="showConfirmPassword ? 'text' : 'password'"
+                placeholder="••••••••"
+                required
+                @keypress="handleKeyPress"
+                class="w-full pl-10 pr-12 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-lab-500 focus:border-transparent transition-all"
+              />
+              <button
+                type="button"
+                @click="showConfirmPassword = !showConfirmPassword"
+                class="absolute right-3 top-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+              >
+                {{ showConfirmPassword ? '🙈' : '👁️' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Role Select -->
+          <div class="relative">
+            <label for="role" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Tipe Pengguna
             </label>
             <select
+              id="role"
               v-model="role"
-              class="w-full rounded-xl border border-slate-200 bg-white/80 py-3 px-4 text-sm dark:border-slate-700 dark:bg-slate-900/50"
+              class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-lab-500 focus:border-transparent transition-all"
             >
-              <option value="MAHASISWA">Mahasiswa</option>
-              <option value="PETUGAS">Petugas</option>
-              <option value="ADMIN">Admin</option>
+              <option value="MAHASISWA">Mahasiswa / Pengguna</option>
+              <option value="PETUGAS">Petugas Laboratorium</option>
+              <option value="ADMIN">Administrator</option>
             </select>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            :disabled="loading"
+            class="w-full mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-lab-600 to-lab-700 hover:from-lab-700 hover:to-lab-800 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-3 font-semibold text-white shadow-lg shadow-lab-500/25 transition-all hover:-translate-y-0.5 active:translate-y-0"
+          >
+            <span v-if="!loading">Daftar</span>
+            <span v-else class="flex items-center gap-2">
+              <Loader2 class="w-4 h-4 animate-spin" />
+              Loading...
+            </span>
+            <ArrowRight v-if="!loading" class="w-4 h-4" />
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="relative my-6">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-slate-200 dark:border-slate-700"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400">atau</span>
           </div>
         </div>
 
+        <!-- Login Link -->
         <button
-          type="submit"
-          :disabled="loading"
-          class="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-600 to-accent-500 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-accent-500/30 transition-all hover:shadow-accent-500/50 hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:translate-y-0"
+          type="button"
+          @click="goToLogin"
+          class="w-full py-3 px-4 rounded-lg border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all flex items-center justify-center gap-2"
         >
-          <Loader2 v-if="loading" class="h-4 w-4 animate-spin" />
-          <template v-else>
-            Daftar
-            <ArrowRight class="h-4 w-4" />
-          </template>
+          <ArrowLeft class="w-4 h-4" />
+          Kembali ke Login
         </button>
+      </div>
 
-        <p class="mt-6 text-center text-sm text-slate-500">
-          Sudah punya akun?
-          <RouterLink
-            to="/login"
-            class="font-semibold text-lab-600 hover:text-lab-500 dark:text-lab-400"
-          >
-            Masuk sekarang
-          </RouterLink>
-        </p>
-      </form>
+      <!-- Footer -->
+      <p class="text-center text-sm text-slate-600 dark:text-slate-400 mt-6">
+        Sistem Informasi Laboratorium © 2024
+      </p>
     </div>
   </div>
 </template>
+
+<style scoped>
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out;
+}
+</style>

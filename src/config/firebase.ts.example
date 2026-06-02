@@ -1,0 +1,61 @@
+/**
+ * Firebase Configuration untuk Frontend
+ * 
+ * Firebase Reference: https://firebase.google.com/docs/web/setup
+ * 
+ * Setup:
+ * 1. Create Firebase Project di https://console.firebase.google.com
+ * 2. Register Web App
+ * 3. Copy firebase config dari Firebase Console
+ * 4. Paste ke file ini
+ * 
+ * Langkah-langkah:
+ * - Go to Firebase Console
+ * - Click Project Settings (gear icon)
+ * - Scroll to "Your apps" section
+ * - Klik "Config" untuk web app
+ * - Copy firebaseConfig object
+ * - Replace values di bawah
+ */
+
+import { initializeApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
+
+// Firebase Reference: Configure Firebase SDK
+// Dapatkan values dari Firebase Console > Project Settings > Web App Config
+export const firebaseConfig = {
+  // Your Firebase project API key
+  // Firebase Reference: https://firebase.google.com/docs/projects/api-keys
+  apiKey: "YOUR_API_KEY_HERE",
+  
+  // Your Firebase project auth domain
+  // Format: [PROJECT_ID].firebaseapp.com
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  
+  // Your Firebase project ID
+  // Example: my-labvault-project
+  projectId: "YOUR_PROJECT_ID",
+  
+  // Your Firebase storage bucket
+  // Format: [PROJECT_ID].appspot.com
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  
+  // Messaging sender ID for Cloud Messaging (optional)
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  
+  // Firebase app ID
+  appId: "YOUR_APP_ID"
+}
+
+// Firebase Reference: Initialize Firebase
+// This creates the Firebase app instance used throughout the app
+const app = initializeApp(firebaseConfig)
+
+// Firebase Reference: Initialize Firebase Authentication
+// getAuth() returns the authentication service for this app
+// Used for:
+// - Google OAuth sign-in: firebase.auth().signInWithPopup(new GoogleAuthProvider())
+// - Phone OTP: firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
+export const auth = getAuth(app)
+
+export default app

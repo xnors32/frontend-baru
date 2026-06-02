@@ -22,9 +22,9 @@ export interface ApiResponse<T> {
  */
 export interface PagingInfo {
   currentPage: number;
-  totalPage: number;
-  totalItem: number;
-  itemPerPage: number;
+  totalPages: number;
+  size: number;
+  totalElements: number;
 }
 
 /**

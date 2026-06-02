@@ -10,7 +10,5 @@ export interface UserUpdatePayload {
 export const usersApi = {
   getAll: () => unwrap(apiClient.get<ApiResponse<User[]>>('/users')),
   getById: (id: number) => unwrap(apiClient.get<ApiResponse<User>>(`/users/${id}`)),
-  update: (id: number, payload: UserUpdatePayload) =>
-    unwrap(apiClient.patch<ApiResponse<User>>(`/users/${id}`, payload)),
   remove: (id: number) => unwrap(apiClient.delete<ApiResponse<null>>(`/users/${id}`)),
 }

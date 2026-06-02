@@ -4,8 +4,6 @@ import type { ApiResponse, Barang, BarangPayload } from '@/types/api'
 export const barangApi = {
   getAll: () => unwrap(apiClient.get<ApiResponse<Barang[]>>('/barang')),
   getById: (id: number) => unwrap(apiClient.get<ApiResponse<Barang>>(`/barang/${id}`)),
-  search: (q: string) =>
-    unwrap(apiClient.get<ApiResponse<Barang[]>>('/barang/search', { params: { q } })),
   create: (payload: BarangPayload) =>
     unwrap(apiClient.post<ApiResponse<Barang>>('/barang', payload)),
   update: (id: number, payload: BarangPayload) =>

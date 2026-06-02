@@ -102,7 +102,7 @@ function openEdit(b: Barang) {
     namaBarang: b.namaBarang,
     kodeBarang: b.kodeBarang,
     jumlahTotal: b.jumlahTotal,
-    idKategori: b.kategori?.idKategori ?? 1,
+    idKategori: b.idKategori ?? 1,
     kondisi: (b.kondisi as Kondisi) || 'BAIK',
     lokasi: b.lokasi ?? '',
     harga: b.harga ?? 0,
@@ -203,7 +203,7 @@ useAutoRefresh(() => load(true))
           {{ b.namaBarang }}
         </td>
         <td class="px-5 py-4 text-slate-600 dark:text-slate-300">
-          {{ b.kategori?.namaKategori ?? '—' }}
+          {{ b.namaKategori ?? '—' }}
         </td>
         <td class="px-5 py-4">
           <span class="font-semibold text-lab-600 dark:text-lab-400">{{ b.jumlahTersedia }}</span>
@@ -321,6 +321,7 @@ useAutoRefresh(() => load(true))
           <label class="text-xs font-semibold uppercase text-slate-500">Lokasi</label>
           <input
             v-model="form.lokasi"
+            required
             class="mt-1 w-full rounded-lg sm:rounded-xl border border-slate-200 py-2 sm:py-2.5 px-3 text-sm dark:border-slate-700 dark:bg-slate-900/50"
           />
         </div>
