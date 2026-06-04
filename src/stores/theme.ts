@@ -1,13 +1,19 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 
-export type ThemeMode = 'light' | 'dark' | 'system'
+export type ThemeMode = 'light' | 'dark' | 'system' | 'schedule'
 
 const STORAGE_KEY = 'labvault-theme'
+
+function isScheduleDark(): boolean {
+  const hour = new Date().getHours()
+  return hour < 6 || hour >= 18
+}
 
 function resolveDark(mode: ThemeMode): boolean {
   if (mode === 'dark') return true
   if (mode === 'light') return false
+  if (mode === 'schedule') return isScheduleDark()
   return window.matchMedia('(prefers-color-scheme: dark)').matches
 }
 
@@ -35,7 +41,7 @@ export const useThemeStore = defineStore('theme', () => {
   }
 
   function cycle() {
-    const order: ThemeMode[] = ['light', 'dark', 'system']
+    const order: ThemeMode[] = ['light', 'dark', 'system', 'schedule']
     const idx = order.indexOf(mode.value)
     setMode(order[(idx + 1) % order.length]!)
   }
@@ -46,6 +52,9 @@ export const useThemeStore = defineStore('theme', () => {
     media.addEventListener('change', () => {
       if (mode.value === 'system') sync()
     })
+    setInterval(() => {
+      if (mode.value === 'schedule') sync()
+    }, 60_000)
   }
 
   watch(mode, sync)

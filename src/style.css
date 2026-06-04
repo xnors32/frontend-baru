@@ -107,7 +107,7 @@ html {
 
 body {
   @apply font-sans antialiased;
-  @apply bg-slate-50 text-slate-900;
+  @apply bg-amber-50 text-stone-800;
   @apply dark:bg-slate-950 dark:text-slate-100;
   min-height: 100dvh;
 }
@@ -132,12 +132,12 @@ body {
 }
 
 .glass {
-  @apply bg-white/70 backdrop-blur-xl border border-white/60;
+  @apply bg-amber-50/80 backdrop-blur-xl border border-amber-100/80;
   @apply dark:bg-slate-950 dark:border-slate-800;
 }
 
 .glass-strong {
-  @apply bg-white/85 backdrop-blur-2xl border border-white/70 shadow-xl shadow-slate-200/40;
+  @apply bg-amber-50/90 backdrop-blur-2xl border border-amber-100/80 shadow-xl shadow-amber-200/40;
   @apply dark:bg-slate-950 dark:border-slate-800 dark:shadow-black/50;
 }
 
@@ -202,5 +202,5 @@ body {
 input:focus,
 select:focus,
 textarea:focus {
-  @apply outline-none ring-2 ring-lab-500/40 ring-offset-2 ring-offset-white dark:ring-offset-slate-900;
+  @apply outline-none ring-2 ring-lab-500/40 ring-offset-2 ring-offset-amber-50 dark:ring-offset-slate-900;
 }
