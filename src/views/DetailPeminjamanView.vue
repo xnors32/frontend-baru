@@ -5,7 +5,7 @@ import { detailPeminjamanApi } from '@/api/detailPeminjaman'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
-import type { DetailPeminjaman, Kondisi } from '@/types/api'
+import type { DetailPeminjaman } from '@/types/api'
 import { formatRupiah } from '@/utils/format'
 import { ArrowLeft, Package, Hash, Layers, Shield, Banknote } from '@lucide/vue'
 
@@ -15,7 +15,8 @@ const auth = useAuthStore()
 const toast = useToast()
 const loading = ref(true)
 const detail = ref<DetailPeminjaman | null>(null)
-const kondisi = ref<Kondisi>('BAIK')
+const jumlahBaik = ref(0)
+const jumlahRusak = ref(0)
 const saving = ref(false)
 
 const id = Number(route.params.id)
@@ -24,9 +25,8 @@ async function load() {
   loading.value = true
   try {
     detail.value = await detailPeminjamanApi.getById(id)
-    if (detail.value.kondisiKembali) {
-      kondisi.value = detail.value.kondisiKembali as Kondisi
-    }
+    jumlahBaik.value = detail.value.jumlahBaik || detail.value.jumlah
+    jumlahRusak.value = detail.value.jumlahRusak || 0
   } catch (e) {
     toast.show(e instanceof Error ? e.message : 'Detail tidak ditemukan', 'error')
     router.back()
@@ -36,9 +36,14 @@ async function load() {
 }
 
 async function updateKondisi() {
+  if (!detail.value) return
+  if (jumlahBaik.value + jumlahRusak.value !== detail.value.jumlah) {
+    toast.show('Jumlah baik + rusak harus sama dengan jumlah dipinjam (' + detail.value.jumlah + ')', 'error')
+    return
+  }
   saving.value = true
   try {
-    detail.value = await detailPeminjamanApi.updateKondisi(id, kondisi.value)
+    detail.value = await detailPeminjamanApi.updateKondisi(id, jumlahBaik.value, jumlahRusak.value)
     toast.show('Kondisi kembali diperbarui', 'success')
   } catch (e) {
     toast.show(e instanceof Error ? e.message : 'Gagal memperbarui', 'error')
@@ -139,14 +144,31 @@ onMounted(load)
             <label class="text-xs font-semibold uppercase text-slate-500">
               Kondisi Saat Kembali
             </label>
-            <select
-              v-model="kondisi"
-              class="mt-2 w-full rounded-xl border py-2.5 px-3 text-sm dark:border-slate-700 dark:bg-slate-900/50"
-            >
-              <option value="BAIK">Baik</option>
-              <option value="RUSAK_RINGAN">Rusak Ringan</option>
-              <option value="RUSAK_BERAT">Rusak Berat</option>
-            </select>
+            <div class="mt-2 flex items-center gap-4">
+              <div class="flex-1">
+                <span class="text-xs text-emerald-600 font-medium">Baik</span>
+                <input
+                  v-model.number="jumlahBaik"
+                  type="number"
+                  min="0"
+                  :max="detail.jumlah"
+                  class="mt-1 w-full rounded-xl border py-2.5 px-3 text-sm dark:border-slate-700 dark:bg-slate-900/50"
+                  @input="jumlahRusak = detail.jumlah - jumlahBaik"
+                />
+              </div>
+              <div class="flex-1">
+                <span class="text-xs text-rose-600 font-medium">Rusak</span>
+                <input
+                  v-model.number="jumlahRusak"
+                  type="number"
+                  min="0"
+                  :max="detail.jumlah"
+                  class="mt-1 w-full rounded-xl border py-2.5 px-3 text-sm dark:border-slate-700 dark:bg-slate-900/50"
+                  @input="jumlahBaik = detail.jumlah - jumlahRusak"
+                />
+              </div>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">Total: {{ jumlahBaik + jumlahRusak }} / {{ detail.jumlah }}</p>
             <button
               type="button"
               :disabled="saving"
@@ -158,10 +180,16 @@ onMounted(load)
           </div>
 
           <p
-            v-else-if="detail.kondisiKembali"
+            v-else-if="detail.jumlahRusak > 0"
+            class="mt-6 text-sm text-rose-600 dark:text-rose-400"
+          >
+            Rusak: <strong>{{ detail.jumlahRusak }}</strong> unit · Baik: <strong>{{ detail.jumlahBaik }}</strong> unit
+          </p>
+          <p
+            v-else-if="detail.jumlahBaik > 0"
             class="mt-6 text-sm text-emerald-600 dark:text-emerald-400"
           >
-            Kondisi kembali: <strong>{{ detail.kondisiKembali }}</strong>
+            Semua kembali dalam kondisi baik
           </p>
         </div>
       </div>
