@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter, useRoute, RouterLink } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
 import ThemeToggle from '@/components/ui/ThemeToggle.vue'
@@ -8,149 +8,194 @@ import { FlaskConical, Mail, Lock, ArrowRight, Loader2 } from '@lucide/vue'
 
 const auth = useAuthStore()
 const router = useRouter()
-const route = useRoute()
 const toast = useToast()
 
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
+const showPassword = ref(false)
 
-async function submit() {
+async function handleLogin() {
+  // Validation
+  if (!email.value) {
+    toast.show('Email harus diisi', 'error')
+    return
+  }
+  if (!password.value) {
+    toast.show('Password harus diisi', 'error')
+    return
+  }
+
   loading.value = true
   try {
     await auth.login({ email: email.value, password: password.value })
     toast.show('Login berhasil!', 'success')
-    const redirect = (route.query.redirect as string) || '/'
-    router.push(redirect)
-  } catch (e) {
-    toast.show(e instanceof Error ? e.message : 'Login gagal', 'error')
+    router.push('/dashboard')
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Login gagal'
+    toast.show(message, 'error')
   } finally {
     loading.value = false
+  }
+}
+
+function goToRegister() {
+  router.push('/register')
+}
+
+function handleKeyPress(event: KeyboardEvent) {
+  if (event.key === 'Enter' && !loading.value) {
+    handleLogin()
   }
 }
 </script>
 
 <template>
-  <div class="relative flex min-h-dvh items-center justify-center overflow-hidden p-4">
-    <!-- Decorative blobs -->
-    <div
-      class="pointer-events-none absolute -left-32 top-20 h-72 w-72 rounded-full bg-lab-400/20 blur-3xl animate-float"
-    />
-    <div
-      class="pointer-events-none absolute -right-20 bottom-10 h-80 w-80 rounded-full bg-accent-500/15 blur-3xl animate-float"
-      style="animation-delay: -2s"
-    />
+  <div class="min-h-screen bg-gradient-to-br from-lab-50 via-white to-lab-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
+    <!-- Animated background elements -->
+    <div class="absolute top-0 left-0 w-96 h-96 bg-lab-200/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 dark:bg-lab-900/20"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2 dark:bg-blue-900/20"></div>
 
-    <div class="absolute top-4 right-4 z-10">
+    <!-- Theme Toggle -->
+    <div class="absolute top-6 right-6 z-50">
       <ThemeToggle />
     </div>
 
-    <div class="relative grid w-full max-w-5xl gap-8 lg:grid-cols-2 lg:gap-12">
-      <!-- Brand panel -->
-      <div class="hidden lg:flex flex-col justify-center animate-slide-right">
-        <div
-          class="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-lab-500 to-accent-500 text-white shadow-xl shadow-lab-500/25 mb-6"
-        >
-          <FlaskConical class="h-7 w-7" />
+    <!-- Main Container -->
+    <div class="w-full max-w-md relative z-10">
+      <!-- Header -->
+      <div class="text-center mb-8 animate-fade-in">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-lab-600 to-lab-700 shadow-lg mb-4">
+          <FlaskConical class="w-8 h-8 text-white" />
         </div>
-        <h1 class="font-display text-4xl font-bold leading-tight text-slate-900 dark:text-white">
-          Kelola inventaris lab
-          <span class="bg-gradient-to-r from-lab-500 to-accent-500 bg-clip-text text-transparent">
-            lebih cerdas
-          </span>
-        </h1>
-        <p class="mt-4 text-lg text-slate-600 dark:text-slate-400 max-w-md">
-          LabVault menghubungkan stok barang, pengajuan peminjaman, dan persetujuan petugas dalam
-          satu antarmuka yang ringan.
-        </p>
-        <ul class="mt-8 space-y-3 text-sm text-slate-500">
-          <li class="flex items-center gap-2">
-            <span class="h-1.5 w-1.5 rounded-full bg-lab-500" />
-            Real-time stok & ketersediaan
-          </li>
-          <li class="flex items-center gap-2">
-            <span class="h-1.5 w-1.5 rounded-full bg-accent-500" />
-            Alur peminjaman terstruktur
-          </li>
-          <li class="flex items-center gap-2">
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            Role-based: Admin, Petugas, Peminjam
-          </li>
-        </ul>
+        <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Inventori Lab</h1>
+        <p class="text-slate-600 dark:text-slate-400">Sistem Manajemen Inventaris Laboratorium</p>
       </div>
 
-      <!-- Form -->
-      <form
-        class="glass-strong rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl animate-fade-up"
-        @submit.prevent="submit"
-      >
-        <div class="mb-6 sm:mb-8 lg:hidden flex items-center gap-3">
-          <div
-            class="flex h-10 w-10 items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-br from-lab-500 to-accent-500 text-white"
-          >
-            <FlaskConical class="h-5 w-5" />
-          </div>
-          <span class="font-display text-lg sm:text-xl font-bold">LabVault</span>
+      <!-- Card -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 p-8 animate-slide-up">
+        <!-- Title -->
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Login</h2>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Masuk dengan akun Anda</p>
         </div>
 
-        <h2 class="font-display text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Masuk</h2>
-        <p class="mt-1 text-xs sm:text-sm text-slate-500">Gunakan akun yang terdaftar di sistem</p>
-
-        <div class="mt-6 sm:mt-8 space-y-4 sm:space-y-5">
-          <div>
-            <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <!-- Form -->
+        <form @submit.prevent="handleLogin" class="space-y-4">
+          <!-- Email Input -->
+          <div class="relative">
+            <label for="email" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Email
             </label>
             <div class="relative">
-              <Mail class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Mail class="absolute left-3 top-3.5 w-5 h-5 text-slate-400 dark:text-slate-500" />
               <input
+                id="email"
                 v-model="email"
                 type="email"
+                placeholder="nama@example.com"
                 required
-                placeholder="nama@email.com"
-                class="w-full rounded-xl border border-slate-200 bg-white/80 py-3 pl-10 pr-4 text-sm dark:border-slate-700 dark:bg-slate-900/50"
+                @keypress="handleKeyPress"
+                class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-lab-500 focus:border-transparent transition-all"
               />
             </div>
           </div>
-          <div>
-            <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+
+          <!-- Password Input -->
+          <div class="relative">
+            <label for="password" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Password
             </label>
             <div class="relative">
-              <Lock class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Lock class="absolute left-3 top-3.5 w-5 h-5 text-slate-400 dark:text-slate-500" />
               <input
+                id="password"
                 v-model="password"
-                type="password"
-                required
+                :type="showPassword ? 'text' : 'password'"
                 placeholder="••••••••"
-                class="w-full rounded-xl border border-slate-200 bg-white/80 py-3 pl-10 pr-4 text-sm dark:border-slate-700 dark:bg-slate-900/50"
+                required
+                @keypress="handleKeyPress"
+                class="w-full pl-10 pr-12 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-lab-500 focus:border-transparent transition-all"
               />
+              <button
+                type="button"
+                @click="showPassword = !showPassword"
+                class="absolute right-3 top-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+              >
+                {{ showPassword ? '🙈' : '👁️' }}
+              </button>
             </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            :disabled="loading"
+            class="w-full mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-lab-600 to-lab-700 hover:from-lab-700 hover:to-lab-800 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-3 font-semibold text-white shadow-lg shadow-lab-500/25 transition-all hover:-translate-y-0.5 active:translate-y-0"
+          >
+            <span v-if="!loading">Login</span>
+            <span v-else class="flex items-center gap-2">
+              <Loader2 class="w-4 h-4 animate-spin" />
+              Loading...
+            </span>
+            <ArrowRight v-if="!loading" class="w-4 h-4" />
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="relative my-6">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-slate-200 dark:border-slate-700"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400">atau</span>
           </div>
         </div>
 
+        <!-- Register Link -->
         <button
-          type="submit"
-          :disabled="loading"
-          class="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-lab-600 to-lab-500 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-lab-500/30 transition-all hover:shadow-lab-500/50 hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:translate-y-0"
+          type="button"
+          @click="goToRegister"
+          class="w-full py-3 px-4 rounded-lg border-2 border-lab-200 dark:border-lab-900 text-lab-700 dark:text-lab-300 font-semibold hover:bg-lab-50 dark:hover:bg-slate-700 transition-all"
         >
-          <Loader2 v-if="loading" class="h-4 w-4 animate-spin" />
-          <template v-else>
-            Masuk
-            <ArrowRight class="h-4 w-4" />
-          </template>
+          Daftar Akun Baru
         </button>
+      </div>
 
-        <p class="mt-6 text-center text-sm text-slate-500">
-          Belum punya akun?
-          <RouterLink
-            to="/register"
-            class="font-semibold text-lab-600 hover:text-lab-500 dark:text-lab-400"
-          >
-            Daftar sekarang
-          </RouterLink>
-        </p>
-      </form>
+      <!-- Footer -->
+      <p class="text-center text-sm text-slate-600 dark:text-slate-400 mt-6">
+        Sistem Informasi Laboratorium © 2024
+      </p>
     </div>
   </div>
 </template>
+
+<style scoped>
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out;
+}
+</style>

@@ -15,8 +15,12 @@
       ;(function () {
         const stored = localStorage.getItem('labvault-theme')
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-        const dark =
-          stored === 'dark' || ((stored === 'system' || !stored) && prefersDark)
+        let dark = stored === 'dark'
+        if (stored === 'system' || !stored) dark = prefersDark
+        if (stored === 'schedule') {
+          const hour = new Date().getHours()
+          dark = hour < 6 || hour >= 18
+        }
         if (dark) document.documentElement.classList.add('dark')
       })()
     </script>

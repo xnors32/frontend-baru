@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { peminjamanApi } from '@/api/peminjaman'
 import { barangApi } from '@/api/barang'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
 import { useAutoRefresh } from '@/composables/useAutoRefresh'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 import Modal from '@/components/ui/Modal.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import StatusBadge from '@/components/ui/StatusBadge.vue'
-import { formatDate, formatRupiah } from '@/utils/format'
+import { formatDate, formatRupiah, capitalize } from '@/utils/format'
 import type { Barang, DetailPeminjamanPayload, Peminjaman, PeminjamanPayload } from '@/types/api'
-import { ClipboardList, Plus, Filter } from '@lucide/vue'
+import { ClipboardList, Plus, Filter, Trash2 } from '@lucide/vue'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -95,6 +96,8 @@ async function submitCreate() {
 
 onMounted(load)
 useAutoRefresh(() => load(true))
+const { refreshKey } = useRealtimeRefresh()
+watch(refreshKey, () => load(true))
 </script>
 
 <template>
@@ -165,7 +168,7 @@ useAutoRefresh(() => load(true))
             #{{ p.idPeminjaman }}
           </div>
           <div>
-            <p class="font-semibold">{{ p.peminjam.nama }}</p>
+            <p class="font-semibold">{{ capitalize(p.peminjam.nama) }}</p>
             <p class="text-xs text-slate-500 mt-1">
               {{ formatDate(p.tglPinjam) }} — {{ formatDate(p.tglKembali) }}
               · {{ p.details?.length ?? 0 }} item
@@ -195,31 +198,57 @@ useAutoRefresh(() => load(true))
         </div>
 
         <div>
-          <div class="flex items-center justify-between mb-2">
-            <label class="text-xs font-semibold uppercase text-slate-500">Barang</label>
-            <button type="button" class="text-xs text-lab-600 font-medium" @click="addDetailRow">
-              + Tambah baris
+          <div class="flex items-center justify-between mb-3">
+            <label class="text-xs font-bold uppercase tracking-wider text-slate-500">Barang</label>
+            <button
+              type="button"
+              class="inline-flex items-center gap-1 rounded-lg bg-lab-500/10 px-3 py-1.5 text-xs font-semibold text-lab-700 hover:bg-lab-500/20 dark:text-lab-300 transition-colors"
+              @click="addDetailRow"
+            >
+              <Plus class="h-3.5 w-3.5" />
+              Baris
             </button>
           </div>
           <div
             v-for="(d, i) in form.details"
             :key="i"
-            class="flex gap-2 mb-2"
+            class="rounded-xl border border-slate-200 p-3 dark:border-slate-700"
           >
-            <select v-model.number="d.idBarang" class="flex-1 rounded-xl border py-2 px-2 text-sm dark:border-slate-700 dark:bg-slate-900/50">
-              <option v-for="b in barangList" :key="b.idBarang" :value="b.idBarang">
-                {{ b.namaBarang }} — {{ formatRupiah(b.harga) }} (stok: {{ b.jumlahTersedia }})
-              </option>
-            </select>
-            <input v-model.number="d.jumlah" type="number" min="1" class="w-20 rounded-xl border py-2 px-2 text-sm dark:border-slate-700 dark:bg-slate-900/50" />
-            <button
-              v-if="form.details.length > 1"
-              type="button"
-              class="text-rose-500 text-sm px-2"
-              @click="removeDetailRow(i)"
-            >
-              ×
-            </button>
+            <div class="flex items-start gap-2">
+              <div class="flex-1 min-w-0">
+                <select v-model.number="d.idBarang" class="w-full rounded-lg border py-2 px-3 text-sm dark:border-slate-700 dark:bg-slate-900/50">
+                  <option v-for="b in barangList" :key="b.idBarang" :value="b.idBarang" class="py-1">
+                    {{ b.namaBarang }}
+                  </option>
+                </select>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <div>
+                  <input
+                    v-model.number="d.jumlah"
+                    type="number"
+                    min="1"
+                    placeholder="Jml"
+                    class="w-20 rounded-lg border py-2 px-2 text-sm dark:border-slate-700 dark:bg-slate-900/50"
+                  />
+                </div>
+                <button
+                  v-if="form.details.length > 1"
+                  type="button"
+                  class="rounded-lg p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-colors"
+                  @click="removeDetailRow(i)"
+                  title="Hapus"
+                >
+                  <Trash2 class="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+            <div v-if="d.idBarang" class="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+              <p class="text-[10px] text-slate-400">
+                Stok: {{ barangList.find(b => b.idBarang === d.idBarang)?.jumlahTersedia ?? '—' }}
+                · {{ formatRupiah(barangList.find(b => b.idBarang === d.idBarang)?.harga ?? 0) }}
+              </p>
+            </div>
           </div>
         </div>
 

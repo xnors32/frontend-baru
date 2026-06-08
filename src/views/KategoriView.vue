@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { kategoriApi, type KategoriPayload } from '@/api/kategori'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
 import { useAutoRefresh } from '@/composables/useAutoRefresh'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 import PageHeader from '@/components/ui/PageHeader.vue'
 import DataTable from '@/components/ui/DataTable.vue'
 import Modal from '@/components/ui/Modal.vue'
@@ -28,12 +29,12 @@ const form = ref<KategoriPayload>({
 
 const columns = computed(() => {
   const base = [
-    { key: 'no', label: 'No', class: 'w-16' },
+    { key: 'no', label: 'No', class: 'w-16 text-center' },
     { key: 'kategori', label: 'Kategori' },
     { key: 'deskripsi', label: 'Deskripsi Kategori' },
   ]
   if (auth.isAdmin) {
-    base.push({ key: 'aksi', label: 'Aksi', class: 'w-28' })
+    base.push({ key: 'aksi', label: 'Aksi', class: 'w-20 sm:w-28 text-center' })
   }
   return base
 })
@@ -104,6 +105,8 @@ async function confirmDelete() {
 
 onMounted(load)
 useAutoRefresh(() => load(true))
+const { refreshKey } = useRealtimeRefresh()
+watch(refreshKey, () => load(true))
 </script>
 
 <template>
@@ -135,30 +138,30 @@ useAutoRefresh(() => load(true))
         :key="k.idKategori"
         class="border-b border-slate-100 last:border-0 transition-colors hover:bg-slate-50/80 dark:border-slate-800 dark:hover:bg-slate-800/40"
       >
-        <td class="px-5 py-4 text-slate-600 dark:text-slate-400">{{ index + 1 }}</td>
-        <td class="px-5 py-4 font-medium text-slate-900 dark:text-white">
+        <td class="px-4 sm:px-5 py-3 sm:py-4 text-center text-slate-600 dark:text-slate-400">{{ index + 1 }}</td>
+        <td class="px-4 sm:px-5 py-3 sm:py-4 font-medium text-slate-900 dark:text-white">
           {{ k.namaKategori }}
         </td>
-        <td class="px-5 py-4 text-slate-600 dark:text-slate-300">
+        <td class="px-4 sm:px-5 py-3 sm:py-4 text-slate-600 dark:text-slate-300">
           {{ k.deskripsi || '—' }}
         </td>
-        <td v-if="auth.isAdmin" class="px-5 py-4">
-          <div class="flex items-center gap-2">
+        <td v-if="auth.isAdmin" class="px-4 sm:px-5 py-3 sm:py-4">
+          <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
             <button
               type="button"
-              class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-lab-600 dark:hover:bg-slate-800 dark:hover:text-lab-400 transition-colors"
+              class="w-full sm:w-auto rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-lab-600 dark:hover:bg-slate-800 dark:hover:text-lab-400 transition-colors"
               title="Edit"
               @click="openEdit(k)"
             >
-              <Pencil class="h-4 w-4" />
+              <Pencil class="h-4 w-4 mx-auto" />
             </button>
             <button
               type="button"
-              class="rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 transition-colors"
+              class="w-full sm:w-auto rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 transition-colors"
               title="Hapus"
               @click="remove(k.idKategori)"
             >
-              <Trash2 class="h-4 w-4" />
+              <Trash2 class="h-4 w-4 mx-auto" />
             </button>
           </div>
         </td>

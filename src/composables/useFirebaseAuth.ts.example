@@ -1,0 +1,373 @@
+/**
+ * Firebase Authentication Implementation untuk Frontend
+ * 
+ * File ini berisi contoh lengkap implementasi authentication dengan:
+ * - Google OAuth
+ * - Phone OTP
+ * 
+ * Firebase Reference: https://firebase.google.com/docs/auth/web
+ * 
+ * SETUP REQUIRED:
+ * 1. npm install firebase
+ * 2. Create src/config/firebase.ts (gunakan firebase.ts.example sebagai template)
+ * 3. Uncomment code dibawah di src/stores/auth.ts
+ */
+
+// === IMPORTS ===
+// Uncomment di src/stores/auth.ts untuk menggunakan:
+
+/*
+import { 
+  getAuth, 
+  signInWithPopup, 
+  GoogleAuthProvider,
+  signInWithPhoneNumber,
+  RecaptchaVerifier,
+  signOut
+} from 'firebase/auth'
+import { auth } from '@/config/firebase'
+*/
+
+// === GOOGLE OAUTH IMPLEMENTATION ===
+
+/**
+ * Google OAuth Login Implementation
+ * 
+ * Firebase Reference: https://firebase.google.com/docs/auth/web/google-signin
+ * 
+ * Frontend Flow:
+ * 1. User clicks "Sign in with Google" button
+ * 2. Firebase shows Google sign-in popup/redirect
+ * 3. User selects or logs into Google account
+ * 4. Google returns authorization code
+ * 5. Firebase exchanges code for ID token
+ * 6. Get ID token dan kirim ke backend
+ * 7. Backend validates token dengan Firebase Admin SDK
+ * 8. Backend returns JWT token
+ * 9. Frontend stores JWT dan auto-login
+ * 
+ * Contoh implementasi:
+ */
+
+/*
+async function loginWithGoogle() {
+  try {
+    // Firebase Reference: Create Google Auth Provider
+    // GoogleAuthProvider handles:
+    // - OAuth 2.0 flow dengan Google
+    // - Requesting scopes: email, profile
+    // - Handling sign-in popup/redirect
+    const provider = new GoogleAuthProvider()
+    
+    // Firebase Reference: Optional - add custom scopes
+    // provider.addScope('profile')
+    // provider.addScope('email')
+    
+    // Firebase Reference: Sign in with popup
+    // Modal dialog akan muncul untuk user memilih akun Google
+    // Alternative: signInWithRedirect() untuk mobile
+    const result = await signInWithPopup(auth, provider)
+    
+    // Firebase Reference: Get Firebase User
+    const user = result.user
+    console.log('Google user:', user.uid, user.email)
+    
+    // Firebase Reference: Get ID token
+    // ID token berisi informasi terverifikasi dari Google
+    // Token valid selama 1 jam
+    const idToken = await user.getIdToken()
+    
+    // Send ID token ke backend untuk validasi dan JWT generation
+    const data = await authApi.loginWithGoogle(idToken)
+    
+    // Store JWT token dan user data
+    persist(data.token, data.user)
+    return data
+    
+  } catch (error) {
+    if (error.code === 'auth/popup-closed-by-user') {
+      throw new Error('Sign-in dibatalkan oleh user')
+    } else if (error.code === 'auth/popup-blocked') {
+      throw new Error('Pop-up diblock oleh browser')
+    } else {
+      throw new Error('Google sign-in gagal: ' + error.message)
+    }
+  }
+}
+*/
+
+/**
+ * Google OAuth Registration Implementation
+ * 
+ * Firebase Reference: https://firebase.google.com/docs/auth/web/google-signin
+ * 
+ * Frontend Flow:
+ * 1. User clicks "Sign up with Google" button
+ * 2. Firebase shows Google sign-in popup
+ * 3. User memilih atau login ke akun Google
+ * 4. Frontend shows role selection dialog
+ * 5. Get ID token dan kirim ke backend dengan role
+ * 6. Backend validates token dengan Firebase Admin SDK
+ * 7. Backend creates user di database
+ * 8. Backend returns JWT token (auto-login)
+ * 9. Frontend stores JWT dan redirect ke dashboard
+ * 
+ * Contoh implementasi:
+ */
+
+/*
+async function registerWithGoogle(role: Role) {
+  try {
+    // Firebase Reference: Create Google Auth Provider
+    const provider = new GoogleAuthProvider()
+    
+    // Firebase Reference: Sign in with popup
+    const result = await signInWithPopup(auth, provider)
+    
+    // Firebase Reference: Get user info dari Google
+    const user = result.user
+    const idToken = await user.getIdToken()
+    
+    console.log('Google registration:')
+    console.log('- Name:', user.displayName)
+    console.log('- Email:', user.email)
+    console.log('- Role:', role)
+    
+    // Send ke backend dengan role
+    const data = await authApi.registerWithGoogle(idToken, role)
+    
+    // Auto-login
+    persist(data.token, data.user)
+    return data
+    
+  } catch (error) {
+    throw error
+  }
+}
+*/
+
+// === PHONE OTP IMPLEMENTATION ===
+
+/**
+ * Phone OTP Login Implementation
+ * 
+ * Firebase Reference: https://firebase.google.com/docs/auth/web/phone-auth
+ * 
+ * Frontend Flow:
+ * 1. User enters phone number (format: +62812345678)
+ * 2. Setup reCAPTCHA verifier untuk prevent abuse
+ * 3. Firebase sends OTP ke nomor via SMS/WhatsApp
+ * 4. User receives OTP di SMS/WhatsApp
+ * 5. User enters OTP di aplikasi
+ * 6. Firebase verifies OTP dan returns confirmation
+ * 7. Get ID token dan kirim ke backend
+ * 8. Backend validates token dengan Firebase Admin SDK
+ * 9. Backend returns JWT token
+ * 10. Frontend stores JWT dan auto-login
+ * 
+ * Contoh implementasi:
+ */
+
+/*
+async function loginWithPhone() {
+  try {
+    // Step 1: Get phone number dari user
+    const phoneNumber = prompt(
+      'Masukkan nomor WhatsApp/telepon\n' +
+      'Format: +62812345678\n' +
+      '(Ganti 08 dengan +62)'
+    )
+    
+    if (!phoneNumber) {
+      throw new Error('Nomor telepon tidak diisi')
+    }
+    
+    // Validate phone format
+    if (!phoneNumber.startsWith('+')) {
+      throw new Error('Nomor harus dimulai dengan + (plus)')
+    }
+    
+    // Firebase Reference: Setup reCAPTCHA verifier
+    // reCAPTCHA prevents abuse dan unauthorized login attempts
+    // Size: 'invisible' - tidak menampilkan captcha widget
+    const recaptchaVerifier = new RecaptchaVerifier(
+      'recaptcha-container', // HTML element ID
+      {
+        size: 'invisible',
+        callback: (response) => {
+          console.log('reCAPTCHA solved')
+        },
+        'expired-callback': () => {
+          console.log('reCAPTCHA expired')
+        }
+      },
+      auth
+    )
+    
+    // Firebase Reference: Send OTP ke phone number
+    // Firebase akan send SMS ke nomor yang diberikan
+    // Verification timeout: 2 menit (user harus verify dalam 2 menit)
+    console.log('Sending OTP ke nomor:', phoneNumber)
+    const confirmationResult = await signInWithPhoneNumber(
+      auth,
+      phoneNumber,
+      recaptchaVerifier
+    )
+    
+    // Step 2: Wait untuk OTP diterima user
+    // User akan menerima SMS/WhatsApp dengan kode OTP
+    const otp = prompt(
+      'Masukkan kode OTP yang dikirim ke nomor Anda\n' +
+      '(Kode valid selama 2 menit)'
+    )
+    
+    if (!otp || otp.length !== 6) {
+      throw new Error('OTP harus 6 digit')
+    }
+    
+    // Firebase Reference: Verify OTP
+    // Backend akan check apakah OTP sesuai dengan yang dikirim
+    console.log('Verifying OTP...')
+    const result = await confirmationResult.confirm(otp)
+    
+    // Firebase Reference: Get ID token setelah OTP terverifikasi
+    const user = result.user
+    const idToken = await user.getIdToken()
+    
+    console.log('Phone OTP verified:', user.phoneNumber)
+    
+    // Send ke backend untuk validasi dan JWT generation
+    const data = await authApi.loginWithPhone(idToken)
+    
+    // Auto-login
+    persist(data.token, data.user)
+    return data
+    
+  } catch (error) {
+    if (error.code === 'auth/invalid-phone-number') {
+      throw new Error('Format nomor telepon tidak valid')
+    } else if (error.code === 'auth/too-many-requests') {
+      throw new Error('Terlalu banyak percobaan. Coba lagi nanti.')
+    } else if (error.message?.includes('OTP')) {
+      throw new Error('OTP salah atau telah expired')
+    } else {
+      throw error
+    }
+  }
+}
+*/
+
+/**
+ * Phone OTP Registration Implementation
+ * 
+ * Firebase Reference: https://firebase.google.com/docs/auth/web/phone-auth
+ * 
+ * Frontend Flow:
+ * 1. User enters phone number
+ * 2. Setup reCAPTCHA
+ * 3. Firebase sends OTP
+ * 4. User receives OTP di SMS/WhatsApp
+ * 5. User verifies OTP
+ * 6. User fills in name form
+ * 7. User selects role
+ * 8. Get ID token dan send ke backend dengan name + role
+ * 9. Backend creates user di database
+ * 10. Backend returns JWT token (auto-login)
+ * 
+ * Contoh implementasi:
+ */
+
+/*
+async function registerWithPhone(role: Role) {
+  try {
+    // Step 1: Get phone number
+    const phoneNumber = prompt(
+      'Daftar dengan nomor WhatsApp/telepon\n' +
+      'Format: +62812345678'
+    )
+    
+    if (!phoneNumber) throw new Error('Nomor tidak diisi')
+    
+    // Step 2: Setup reCAPTCHA
+    const recaptchaVerifier = new RecaptchaVerifier(
+      'recaptcha-container',
+      { size: 'invisible' },
+      auth
+    )
+    
+    // Step 3: Send OTP
+    console.log('Sending OTP to:', phoneNumber)
+    const confirmationResult = await signInWithPhoneNumber(
+      auth,
+      phoneNumber,
+      recaptchaVerifier
+    )
+    
+    // Step 4: Get OTP dari user
+    const otp = prompt('Masukkan kode OTP (6 digit)')
+    if (!otp) throw new Error('OTP tidak diisi')
+    
+    // Step 5: Verify OTP
+    const result = await confirmationResult.confirm(otp)
+    const user = result.user
+    const idToken = await user.getIdToken()
+    
+    // Step 6: Get user's full name
+    const nama = prompt('Masukkan nama lengkap Anda')
+    if (!nama) throw new Error('Nama tidak diisi')
+    
+    console.log('Phone registration:')
+    console.log('- Phone:', user.phoneNumber)
+    console.log('- Name:', nama)
+    console.log('- Role:', role)
+    
+    // Send ke backend dengan name + role
+    const data = await authApi.registerWithPhone(idToken, nama, role)
+    
+    // Auto-login
+    persist(data.token, data.user)
+    return data
+    
+  } catch (error) {
+    throw error
+  }
+}
+*/
+
+// === LOGOUT IMPLEMENTATION ===
+
+/**
+ * Logout dari Firebase
+ * 
+ * Firebase Reference: https://firebase.google.com/docs/auth/web/manage-users#sign_out
+ * 
+ * Penting: Saat logout dari aplikasi, juga logout dari Firebase
+ * agar session termuat dengan sempurna
+ */
+
+/*
+async function logoutFromFirebase() {
+  try {
+    // Firebase Reference: Sign out dari Firebase
+    // Ini logout user dari Firebase Authentication
+    // JWT token di browser tetap valid sampai expired
+    await signOut(auth)
+    console.log('Firebase logout successful')
+  } catch (error) {
+    console.error('Firebase logout error:', error)
+  }
+}
+*/
+
+// === HTML REQUIREMENTS ===
+
+/**
+ * Untuk menggunakan Phone OTP, tambahkan ke HTML template:
+ * 
+ * <div id="recaptcha-container"></div>
+ * 
+ * PENTING: Div ini harus ada di page, bahkan jika tidak terlihat
+ * reCAPTCHA verifier memerlukan element ini untuk di-attach
+ */
+
+export {}

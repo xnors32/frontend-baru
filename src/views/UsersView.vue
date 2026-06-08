@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { usersApi } from '@/api/users'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
@@ -9,6 +9,8 @@ import RoleBadge from '@/components/ui/RoleBadge.vue'
 import Modal from '@/components/ui/Modal.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import { useAutoRefresh } from '@/composables/useAutoRefresh'
+import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
+import { capitalize } from '@/utils/format'
 import type { User } from '@/types/api'
 import { Trash2 } from '@lucide/vue'
 
@@ -20,11 +22,11 @@ const deleteModalOpen = ref(false)
 const userToDelete = ref<User | null>(null)
 
 const columns = [
-  { key: 'no', label: 'No', class: 'w-16' },
+  { key: 'no', label: 'No', class: 'w-16 text-center' },
   { key: 'nama', label: 'Nama Pengguna' },
   { key: 'email', label: 'Email' },
   { key: 'role', label: 'Hak Akses Role' },
-  { key: 'aksi', label: 'Aksi', class: 'w-20' },
+  { key: 'aksi', label: 'Aksi', class: 'w-20 text-center' },
 ]
 
 async function load(silent = false) {
@@ -65,6 +67,8 @@ async function confirmDelete() {
 
 onMounted(load)
 useAutoRefresh(() => load(true))
+const { refreshKey } = useRealtimeRefresh()
+watch(refreshKey, () => load(true))
 </script>
 
 <template>
@@ -85,13 +89,13 @@ useAutoRefresh(() => load(true))
         :key="u.idUser"
         class="border-b border-slate-100 last:border-0 transition-colors hover:bg-slate-50/80 dark:border-slate-800 dark:hover:bg-slate-800/40"
       >
-        <td class="px-5 py-4 text-slate-600 dark:text-slate-400">{{ index + 1 }}</td>
-        <td class="px-5 py-4 font-medium text-slate-900 dark:text-white">{{ u.nama }}</td>
-        <td class="px-5 py-4 text-slate-600 dark:text-slate-300">{{ u.email }}</td>
-        <td class="px-5 py-4">
+        <td class="px-4 sm:px-5 py-3 sm:py-4 text-center text-slate-600 dark:text-slate-400">{{ index + 1 }}</td>
+        <td class="px-4 sm:px-5 py-3 sm:py-4 font-medium text-slate-900 dark:text-white">{{ capitalize(u.nama) }}</td>
+        <td class="px-4 sm:px-5 py-3 sm:py-4 text-slate-600 dark:text-slate-300">{{ u.email }}</td>
+        <td class="px-4 sm:px-5 py-3 sm:py-4">
           <RoleBadge :role="u.role" />
         </td>
-        <td class="px-5 py-4">
+        <td class="px-4 sm:px-5 py-3 sm:py-4 text-center">
           <button
             type="button"
             class="rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 transition-colors disabled:opacity-40 disabled:pointer-events-none"

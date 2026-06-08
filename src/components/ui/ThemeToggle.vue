@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useThemeStore } from '@/stores/theme'
-import { Sun, Moon, Monitor } from '@lucide/vue'
+import { Sun, Moon, Monitor, Clock } from '@lucide/vue'
 
 const theme = useThemeStore()
 
 const icon = computed(() => {
   if (theme.mode === 'light') return Sun
   if (theme.mode === 'dark') return Moon
-  return Monitor
+  if (theme.mode === 'system') return Monitor
+  return Clock
 })
 
 const label = computed(() => {
   if (theme.mode === 'light') return 'Terang'
   if (theme.mode === 'dark') return 'Gelap'
-  return 'Sistem'
+  if (theme.mode === 'system') return 'Sistem'
+  return 'Jadwal'
 })
 </script>
 
