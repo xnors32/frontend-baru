@@ -44,6 +44,11 @@ const router = createRouter({
           meta: { roles: ['ADMIN'] },
         },
         {
+          path: 'shop',
+          name: 'shop',
+          component: () => import(/* webpackChunkName: "shop" */ '@/views/ShopView.vue'),
+        },
+        {
           path: 'peminjaman',
           name: 'peminjaman',
           component: () => import(/* webpackChunkName: "peminjaman" */ '@/views/PeminjamanView.vue'),
@@ -57,6 +62,22 @@ const router = createRouter({
           path: 'detail-peminjaman/:id',
           name: 'detail-peminjaman',
           component: () => import(/* webpackChunkName: "detail-peminjaman" */ '@/views/DetailPeminjamanView.vue'),
+        },
+        {
+          path: 'periodic-table',
+          name: 'periodic-table',
+          component: () => import(/* webpackChunkName: "periodic-table" */ '@/views/PeriodicTableView.vue'),
+        },
+        {
+          path: 'shop-manage',
+          name: 'shop-manage',
+          component: () => import(/* webpackChunkName: "shop-manage" */ '@/views/ShopManageView.vue'),
+          meta: { roles: ['ADMIN'] },
+        },
+        {
+          path: 'resources',
+          name: 'resources',
+          component: () => import(/* webpackChunkName: "resources" */ '@/views/ResourcesView.vue'),
         },
       ],
     },
