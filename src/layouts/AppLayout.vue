@@ -9,6 +9,7 @@ import { useNotificationStore } from '@/stores/notifications'
 import {
   LayoutDashboard,
   Package,
+  ShoppingBag,
   ClipboardList,
   LogOut,
   Menu,
@@ -18,6 +19,8 @@ import {
   Tags,
   Users,
   Bell,
+  Atom,
+  BookOpen,
 } from '@lucide/vue'
 import { computed } from 'vue'
 
@@ -42,8 +45,12 @@ const allNavItems = [
   { to: '/', name: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: null as string[] | null },
   { to: '/kategori', name: 'kategori', label: 'Kategori', icon: Tags, roles: ['ADMIN', 'PETUGAS'] },
   { to: '/barang', name: 'barang', label: 'Barang', icon: Package, roles: null },
+  { to: '/shop', name: 'shop', label: 'Shop', icon: ShoppingBag, roles: null },
   { to: '/peminjaman', name: 'peminjaman', label: 'Peminjaman', icon: ClipboardList, roles: null },
+  { to: '/shop-manage', name: 'shop-manage', label: 'Shop & DB', icon: ShoppingBag, roles: ['ADMIN'] },
   { to: '/users', name: 'users', label: 'Pengguna', icon: Users, roles: ['ADMIN'] },
+  { to: '/periodic-table', name: 'periodic-table', label: 'Periodic Table', icon: Atom, roles: null },
+  { to: '/resources', name: 'resources', label: 'Jurnal & Tutorial', icon: BookOpen, roles: null },
 ]
 
 const navItems = computed(() =>
@@ -99,7 +106,7 @@ function logout() {
         </button>
       </div>
 
-      <nav class="flex-1 space-y-1 px-4 py-6">
+      <nav class="flex-1 overflow-y-auto space-y-1 px-4 py-6">
         <RouterLink
           v-for="item in navItems"
           :key="item.to"
