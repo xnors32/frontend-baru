@@ -272,6 +272,19 @@ const form = ref<ShopForm>({
   tags: ['Baru'],
 })
 
+async function uploadToCloudinary(file: File): Promise<string> {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('upload_preset', 'shop_unsigned')
+  const res = await fetch('https://api.cloudinary.com/v1_1/dkdtd1om1/image/upload', {
+    method: 'POST',
+    body: formData,
+  })
+  if (!res.ok) throw new Error('Gagal upload gambar ke Cloudinary')
+  const data = await res.json()
+  return data.secure_url
+}
+
 async function handleSave() {
   if (!form.value.namaProduk || form.value.harga === null || form.value.stok === null) {
     alert('Mohon isi nama produk, harga, dan stok')
@@ -285,18 +298,24 @@ async function handleSave() {
 
   saving.value = true
   try {
+    let gambarUrl: string | undefined
+    if (uploadedImages.value.length > 0) {
+      gambarUrl = await uploadToCloudinary(uploadedImages.value[0].file)
+    }
+
     const payload = {
       namaProduk: form.value.namaProduk,
       deskripsi: form.value.deskripsi || undefined,
       harga: form.value.harga,
       stok: form.value.stok,
+      gambarUrl,
       kategori: form.value.kategori || undefined,
       tags: form.value.tags.length > 0 ? form.value.tags.join(',') : undefined,
     }
 
     await shopApi.create(payload)
     alert('Produk shop berhasil dipublikasikan!')
-    router.push('/')
+    router.push('/shop')
   } catch (e) {
     alert(e instanceof Error ? e.message : 'Gagal menyimpan produk')
   } finally {
