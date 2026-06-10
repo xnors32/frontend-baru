@@ -1,234 +1,217 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="border-b border-gray-200 bg-white px-6 py-4">
-      <div class="max-w-7xl mx-auto">
-        <p class="text-sm text-gray-600 mb-2">Shop / Tambah Produk Baru</p>
-        <div class="flex items-center justify-between">
-          <h1 class="text-3xl font-bold text-gray-900">Upload Produk Shop</h1>
-          <div class="flex gap-3">
-            <button
-              @click="resetForm"
-              class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
-            >
-              Batal
-            </button>
-            <button
-              @click="handleSave"
-              :disabled="saving"
-              class="px-6 py-2 bg-teal-700 text-white rounded-lg font-medium hover:bg-teal-800 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              <Loader2 v-if="saving" class="h-4 w-4 animate-spin" />
-              Simpan Produk
-            </button>
-          </div>
+  <div class="animate-fade-in">
+    <PageHeader
+      title="Upload Produk Shop"
+      :breadcrumbs="[
+        { label: 'Shop', to: '/shop' },
+        { label: 'Upload Produk' },
+      ]"
+    >
+      <template #actions>
+        <div class="flex gap-3">
+          <button
+            @click="resetForm"
+            class="rounded-lg px-4 py-2 text-sm font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            Batal
+          </button>
+          <button
+            @click="handleSave"
+            :disabled="saving"
+            class="inline-flex items-center gap-2 rounded-lg sm:rounded-xl bg-lab-600 px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white shadow-lg shadow-lab-500/25 transition-all hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:translate-y-0 disabled:cursor-not-allowed"
+          >
+            <Loader2 v-if="saving" class="h-4 w-4 animate-spin" />
+            <Check v-else :size="18" />
+            {{ saving ? 'Menyimpan...' : 'Simpan & Terbitkan' }}
+          </button>
         </div>
-      </div>
-    </div>
+      </template>
+    </PageHeader>
 
-    <div class="max-w-7xl mx-auto px-6 py-8">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="lg:col-span-2 space-y-8">
-          <section class="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 class="text-lg font-semibold text-gray-900 mb-6 pb-4 border-b border-gray-200">
-              Informasi Produk
-            </h2>
-            <div class="space-y-5">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Nama Produk <span class="text-red-500">*</span>
-                </label>
-                <input
-                  v-model="form.namaProduk"
-                  type="text"
-                  placeholder="Contoh: Larutan NaCl 0.9%"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
-                />
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 space-y-6">
+        <section class="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+          <h2 class="mb-6 pb-4 border-b border-slate-200 text-lg font-semibold text-slate-900 dark:border-slate-700 dark:text-white">
+            Informasi Produk
+          </h2>
+          <div class="space-y-5">
+            <div>
+              <label class="text-xs font-semibold uppercase text-slate-500">
+                Nama Produk <span class="text-rose-500">*</span>
+              </label>
+              <input
+                v-model="form.namaProduk"
+                type="text"
+                placeholder="Contoh: Larutan NaCl 0.9%"
+                class="mt-1 w-full rounded-lg sm:rounded-xl border border-slate-200 py-2 sm:py-2.5 px-3 text-sm dark:border-slate-700 dark:bg-slate-900/50"
+              />
+            </div>
+
+            <div>
+              <label class="text-xs font-semibold uppercase text-slate-500">
+                Deskripsi Produk
+              </label>
+              <textarea
+                v-model="form.deskripsi"
+                placeholder="Jelaskan detail produk bahan lab di sini..."
+                rows="5"
+                class="mt-1 w-full rounded-lg sm:rounded-xl border border-slate-200 py-2 sm:py-2.5 px-3 text-sm dark:border-slate-700 dark:bg-slate-900/50 resize-none"
+              ></textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+          <h2 class="mb-6 pb-4 border-b border-slate-200 text-lg font-semibold text-slate-900 dark:border-slate-700 dark:text-white">
+            Media Produk
+          </h2>
+
+          <div
+            @drop="handleDrop"
+            @dragover.prevent="isDragging = true"
+            @dragleave="isDragging = false"
+            :class="[
+              'border-2 border-dashed rounded-xl p-8 text-center transition mb-6',
+              isDragging ? 'border-lab-500 bg-lab-50 dark:bg-lab-900/20' : 'border-slate-300 bg-slate-50 dark:border-slate-600 dark:bg-slate-900/30'
+            ]"
+          >
+            <div class="flex flex-col items-center gap-3">
+              <div class="w-12 h-12 bg-lab-100 dark:bg-lab-900/30 rounded-full flex items-center justify-center">
+                <Upload class="text-lab-600 dark:text-lab-400" :size="24" />
               </div>
-
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Deskripsi Produk
-                </label>
-                <textarea
-                  v-model="form.deskripsi"
-                  placeholder="Jelaskan detail produk bahan lab di sini..."
-                  rows="5"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition resize-none"
-                ></textarea>
+                <p class="font-semibold text-slate-900 dark:text-white">Tarik & Lepas Gambar</p>
+                <p class="text-sm text-slate-500">Format: JPG, PNG (Maks. 5MB)</p>
               </div>
             </div>
-          </section>
-
-          <section class="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 class="text-lg font-semibold text-gray-900 mb-6 pb-4 border-b border-gray-200">
-              Media Produk
-            </h2>
-
-            <div
-              @drop="handleDrop"
-              @dragover.prevent="isDragging = true"
-              @dragleave="isDragging = false"
-              :class="[
-                'border-2 border-dashed rounded-lg p-8 text-center transition mb-6',
-                isDragging ? 'border-teal-500 bg-teal-50' : 'border-gray-300 bg-gray-50'
-              ]"
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              @change="handleFileInput"
+              class="hidden"
+              ref="fileInput"
+            />
+            <button
+              @click="fileInput?.click()"
+              class="mt-4 px-6 py-2 border border-lab-600 text-lab-600 dark:text-lab-400 dark:border-lab-400 rounded-lg font-medium hover:bg-lab-50 dark:hover:bg-lab-900/20 transition"
             >
-              <div class="flex flex-col items-center gap-3">
-                <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
-                  <Upload class="text-teal-600" :size="24" />
-                </div>
-                <div>
-                  <p class="font-semibold text-gray-900">Tarik & Lepas Gambar</p>
-                  <p class="text-sm text-gray-600">Format: JPG, PNG (Maks. 5MB)</p>
-                </div>
-              </div>
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                @change="handleFileInput"
-                class="hidden"
-                ref="fileInput"
+              Pilih Berkas
+            </button>
+          </div>
+
+          <div class="grid grid-cols-4 gap-4">
+            <div
+              v-for="(file, idx) in uploadedImages"
+              :key="idx"
+              class="relative bg-slate-100 dark:bg-slate-700 rounded-xl overflow-hidden aspect-square group"
+            >
+              <img
+                :src="file.preview"
+                :alt="`Preview ${idx}`"
+                class="w-full h-full object-cover"
               />
               <button
-                @click="fileInput?.click()"
-                class="mt-4 px-6 py-2 border border-teal-600 text-teal-600 rounded-lg font-medium hover:bg-teal-50 transition"
+                @click="removeImage(idx)"
+                class="absolute top-2 right-2 bg-rose-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition"
               >
-                Pilih Berkas
+                <X :size="16" />
               </button>
             </div>
 
-            <div class="grid grid-cols-4 gap-4">
-              <div
-                v-for="(file, idx) in uploadedImages"
-                :key="idx"
-                class="relative bg-gray-100 rounded-lg overflow-hidden aspect-square group"
-              >
-                <img
-                  :src="file.preview"
-                  :alt="`Preview ${idx}`"
-                  class="w-full h-full object-cover"
-                />
-                <button
-                  @click="removeImage(idx)"
-                  class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition"
-                >
-                  <X :size="16" />
-                </button>
-              </div>
-
-              <div
-                @click="fileInput?.click()"
-                class="bg-gray-100 rounded-lg aspect-square flex items-center justify-center cursor-pointer hover:bg-gray-200 transition border-2 border-dashed border-gray-300"
-              >
-                <Plus class="text-gray-400" :size="32" />
-              </div>
+            <div
+              @click="fileInput?.click()"
+              class="bg-slate-100 dark:bg-slate-700 rounded-xl aspect-square flex items-center justify-center cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-600 transition border-2 border-dashed border-slate-300 dark:border-slate-600"
+            >
+              <Plus class="text-slate-400" :size="32" />
             </div>
-          </section>
-        </div>
+          </div>
+        </section>
+      </div>
 
-        <div class="space-y-8">
-          <section class="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 class="text-lg font-semibold text-gray-900 mb-6 pb-4 border-b border-gray-200">
-              Harga & Stok
-            </h2>
-            <div class="space-y-5">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Harga Jual (IDR) <span class="text-red-500">*</span>
-                </label>
-                <div class="flex items-center gap-2">
-                  <span class="text-gray-600 font-medium">Rp</span>
-                  <input
-                    v-model="form.harga"
-                    type="number"
-                    placeholder="0"
-                    min="0"
-                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Stok Barang <span class="text-red-500">*</span>
-                </label>
+      <div class="space-y-6">
+        <section class="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+          <h2 class="mb-6 pb-4 border-b border-slate-200 text-lg font-semibold text-slate-900 dark:border-slate-700 dark:text-white">
+            Harga & Stok
+          </h2>
+          <div class="space-y-5">
+            <div>
+              <label class="text-xs font-semibold uppercase text-slate-500">
+                Harga Jual (IDR) <span class="text-rose-500">*</span>
+              </label>
+              <div class="mt-1 flex items-center gap-2">
+                <span class="text-slate-500 font-medium">Rp</span>
                 <input
-                  v-model="form.stok"
+                  v-model="form.harga"
                   type="number"
                   placeholder="0"
                   min="0"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
+                  class="flex-1 rounded-lg sm:rounded-xl border border-slate-200 py-2 sm:py-2.5 px-3 text-sm dark:border-slate-700 dark:bg-slate-900/50"
                 />
               </div>
             </div>
-          </section>
 
-          <section class="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 class="text-lg font-semibold text-gray-900 mb-6 pb-4 border-b border-gray-200">
-              Kategori & Label
-            </h2>
-            <div class="space-y-5">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Kategori
-                </label>
-                <select
-                  v-model="form.kategori"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition bg-white cursor-pointer"
+            <div>
+              <label class="text-xs font-semibold uppercase text-slate-500">
+                Stok Barang <span class="text-rose-500">*</span>
+              </label>
+              <input
+                v-model="form.stok"
+                type="number"
+                placeholder="0"
+                min="0"
+                class="mt-1 w-full rounded-lg sm:rounded-xl border border-slate-200 py-2 sm:py-2.5 px-3 text-sm dark:border-slate-700 dark:bg-slate-900/50"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section class="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
+          <h2 class="mb-6 pb-4 border-b border-slate-200 text-lg font-semibold text-slate-900 dark:border-slate-700 dark:text-white">
+            Kategori & Label
+          </h2>
+          <div class="space-y-5">
+            <div>
+              <label class="text-xs font-semibold uppercase text-slate-500">
+                Kategori
+              </label>
+              <select
+                v-model="form.kategori"
+                class="mt-1 w-full rounded-lg sm:rounded-xl border border-slate-200 py-2 sm:py-2.5 px-3 text-sm dark:border-slate-700 dark:bg-slate-900/50 cursor-pointer"
+              >
+                <option value="">Pilih Kategori</option>
+                <option value="cairan">Cairan Kimia</option>
+                <option value="padatan">Padatan Kimia</option>
+                <option value="alat">Alat Lab Sekali Pakai</option>
+                <option value="gas">Gas</option>
+                <option value="lainnya">Lainnya</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="text-xs font-semibold uppercase text-slate-500">
+                Label Produk (Tags)
+              </label>
+              <div class="flex flex-wrap gap-2 mb-3 mt-1">
+                <span
+                  v-for="(tag, idx) in form.tags"
+                  :key="idx"
+                  class="inline-flex items-center gap-2 bg-lab-100 dark:bg-lab-900/30 text-lab-800 dark:text-lab-300 px-3 py-1 rounded-full text-sm"
                 >
-                  <option value="">Pilih Kategori</option>
-                  <option value="cairan">Cairan Kimia</option>
-                  <option value="padatan">Padatan Kimia</option>
-                  <option value="alat">Alat Lab Sekali Pakai</option>
-                  <option value="gas">Gas</option>
-                  <option value="lainnya">Lainnya</option>
-                </select>
+                  {{ tag }}
+                  <button @click="removeTag(idx)" class="hover:text-lab-900 dark:hover:text-lab-200 font-semibold">&times;</button>
+                </span>
               </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Label Produk (Tags)
-                </label>
-                <div class="flex flex-wrap gap-2 mb-3">
-                  <span
-                    v-for="(tag, idx) in form.tags"
-                    :key="idx"
-                    class="inline-flex items-center gap-2 bg-teal-100 text-teal-800 px-3 py-1 rounded-full text-sm"
-                  >
-                    {{ tag }}
-                    <button @click="removeTag(idx)" class="hover:text-teal-900 font-semibold">&times;</button>
-                  </span>
-                </div>
-                <input
-                  v-model="tagInput"
-                  @keydown.enter="addTag"
-                  type="text"
-                  placeholder="Ketik label dan tekan Enter"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition"
-                />
-              </div>
+              <input
+                v-model="tagInput"
+                @keydown.enter="addTag"
+                type="text"
+                placeholder="Ketik label dan tekan Enter"
+                class="w-full rounded-lg sm:rounded-xl border border-slate-200 py-2 sm:py-2.5 px-3 text-sm dark:border-slate-700 dark:bg-slate-900/50"
+              />
             </div>
-          </section>
-        </div>
-      </div>
-
-      <div class="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
-        <button
-          @click="resetForm"
-          class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition"
-        >
-          Batal
-        </button>
-        <button
-          @click="handleSave"
-          :disabled="saving"
-          class="px-6 py-2 bg-teal-700 text-white rounded-lg font-medium hover:bg-teal-800 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-        >
-          <Check v-if="!saving" :size="18" />
-          <Loader2 v-else class="h-4 w-4 animate-spin" />
-          {{ saving ? 'Menyimpan...' : 'Simpan & Terbitkan' }}
-        </button>
+          </div>
+        </section>
       </div>
     </div>
   </div>
@@ -240,6 +223,7 @@ import { useRouter } from 'vue-router'
 import { shopApi } from '@/api/shop'
 import { useAuthStore } from '@/stores/auth'
 import { Upload, X, Plus, Loader2, Check } from '@lucide/vue'
+import PageHeader from '@/components/ui/PageHeader.vue'
 
 interface ImageFile {
   preview: string
