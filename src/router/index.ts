@@ -49,6 +49,12 @@ const router = createRouter({
           meta: { roles: ['ADMIN'] },
         },
         {
+          path: 'shop/orders',
+          name: 'shop-orders',
+          component: () => import(/* webpackChunkName: "shop" */ '@/views/ShopOrdersView.vue'),
+          meta: { roles: ['ADMIN', 'PETUGAS'] },
+        },
+        {
           path: 'users',
           name: 'users',
           component: () => import(/* webpackChunkName: "users" */ '@/views/UsersView.vue'),

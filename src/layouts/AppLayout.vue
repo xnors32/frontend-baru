@@ -46,6 +46,7 @@ const allNavItems = [
   { to: '/kategori', name: 'kategori', label: 'Kategori', icon: Tags, roles: ['ADMIN', 'PETUGAS'] },
   { to: '/barang', name: 'barang', label: 'Barang', icon: Package, roles: null },
   { to: '/shop', name: 'shop', label: 'Shope', icon: ShoppingCart, roles: null },
+ { to: '/shop/orders', name: 'shop-orders', label: 'Pesanan Shop', icon: ClipboardList, roles: ['ADMIN', 'PETUGAS'] },
   { to: '/peminjaman', name: 'peminjaman', label: 'Peminjam', icon: ClipboardList, roles: null },
   { to: '/periodic-table', name: 'periodic-table', label: 'Table Periodik', icon: Atom, roles: null },
   { to: '/resources', name: 'resources', label: 'Jurnal dan Tutorial', icon: BookOpen, roles: null },

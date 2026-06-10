@@ -189,6 +189,27 @@ export interface ShopProductPayload {
 }
 
 /**
+ * Shop Order
+ */
+export interface ShopOrder {
+  id: number;
+  productId: number;
+  productName: string;
+  productImage?: string;
+  quantity: number;
+  totalHarga: number;
+  status: string;
+  orderBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ShopOrderPayload {
+  productId: number;
+  quantity: number;
+}
+
+/**
  * Error Response
  * Standard error response dari backend
  */
