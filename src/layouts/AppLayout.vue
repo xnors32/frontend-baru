@@ -45,11 +45,11 @@ const allNavItems = [
   { to: '/', name: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: null as string[] | null },
   { to: '/kategori', name: 'kategori', label: 'Kategori', icon: Tags, roles: ['ADMIN', 'PETUGAS'] },
   { to: '/barang', name: 'barang', label: 'Barang', icon: Package, roles: null },
-  { to: '/shop', name: 'shop', label: 'Shop', icon: ShoppingCart, roles: null },
-  { to: '/peminjaman', name: 'peminjaman', label: 'Peminjaman', icon: ClipboardList, roles: null },
+  { to: '/shop', name: 'shop', label: 'Shope', icon: ShoppingCart, roles: null },
+  { to: '/peminjaman', name: 'peminjaman', label: 'Peminjam', icon: ClipboardList, roles: null },
+  { to: '/periodic-table', name: 'periodic-table', label: 'Table Periodik', icon: Atom, roles: null },
+  { to: '/resources', name: 'resources', label: 'Jurnal dan Tutorial', icon: BookOpen, roles: null },
   { to: '/users', name: 'users', label: 'Pengguna', icon: Users, roles: ['ADMIN'] },
-  { to: '/periodic-table', name: 'periodic-table', label: 'Periodic Table', icon: Atom, roles: null },
-  { to: '/resources', name: 'resources', label: 'Jurnal & Tutorial', icon: BookOpen, roles: null },
 ]
 
 const navItems = computed(() =>
