@@ -75,12 +75,6 @@ const router = createRouter({
           component: () => import(/* webpackChunkName: "periodic-table" */ '@/views/PeriodicTableView.vue'),
         },
         {
-          path: 'shop-manage',
-          name: 'shop-manage',
-          component: () => import(/* webpackChunkName: "shop-manage" */ '@/views/ShopManageView.vue'),
-          meta: { roles: ['ADMIN'] },
-        },
-        {
           path: 'resources',
           name: 'resources',
           component: () => import(/* webpackChunkName: "resources" */ '@/views/ResourcesView.vue'),

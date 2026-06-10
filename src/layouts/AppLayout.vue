@@ -9,7 +9,6 @@ import { useNotificationStore } from '@/stores/notifications'
 import {
   LayoutDashboard,
   Package,
-  ShoppingBag,
   ClipboardList,
   LogOut,
   Menu,
@@ -48,7 +47,6 @@ const allNavItems = [
   { to: '/barang', name: 'barang', label: 'Barang', icon: Package, roles: null },
   { to: '/shop', name: 'shop', label: 'Shop', icon: ShoppingCart, roles: null },
   { to: '/peminjaman', name: 'peminjaman', label: 'Peminjaman', icon: ClipboardList, roles: null },
-  { to: '/shop-manage', name: 'shop-manage', label: 'Shop & DB', icon: ShoppingBag, roles: ['ADMIN'] },
   { to: '/users', name: 'users', label: 'Pengguna', icon: Users, roles: ['ADMIN'] },
   { to: '/periodic-table', name: 'periodic-table', label: 'Periodic Table', icon: Atom, roles: null },
   { to: '/resources', name: 'resources', label: 'Jurnal & Tutorial', icon: BookOpen, roles: null },
