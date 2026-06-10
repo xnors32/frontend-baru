@@ -161,6 +161,34 @@ export interface RegisterPayload {
 }
 
 /**
+ * Shop Product (toko bahan lab)
+ * Terpisah dari barang inventaris
+ */
+export interface ShopProduct {
+  id: number;
+  namaProduk: string;
+  deskripsi?: string;
+  harga: number;
+  stok: number;
+  gambarUrl?: string;
+  kategori?: string;
+  tags?: string;
+  createdBy?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ShopProductPayload {
+  namaProduk: string;
+  deskripsi?: string;
+  harga: number;
+  stok: number;
+  gambarUrl?: string;
+  kategori?: string;
+  tags?: string;
+}
+
+/**
  * Error Response
  * Standard error response dari backend
  */

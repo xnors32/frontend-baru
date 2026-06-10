@@ -21,6 +21,7 @@ import {
   Bell,
   Atom,
   BookOpen,
+  ShoppingCart,
 } from '@lucide/vue'
 import { computed } from 'vue'
 
@@ -45,7 +46,7 @@ const allNavItems = [
   { to: '/', name: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: null as string[] | null },
   { to: '/kategori', name: 'kategori', label: 'Kategori', icon: Tags, roles: ['ADMIN', 'PETUGAS'] },
   { to: '/barang', name: 'barang', label: 'Barang', icon: Package, roles: null },
-  { to: '/shop', name: 'shop', label: 'Shop', icon: ShoppingBag, roles: null },
+  { to: '/shop', name: 'shop', label: 'Shop', icon: ShoppingCart, roles: null },
   { to: '/peminjaman', name: 'peminjaman', label: 'Peminjaman', icon: ClipboardList, roles: null },
   { to: '/shop-manage', name: 'shop-manage', label: 'Shop & DB', icon: ShoppingBag, roles: ['ADMIN'] },
   { to: '/users', name: 'users', label: 'Pengguna', icon: Users, roles: ['ADMIN'] },

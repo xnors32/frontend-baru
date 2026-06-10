@@ -38,15 +38,21 @@ const router = createRouter({
           component: () => import(/* webpackChunkName: "barang" */ '@/views/BarangView.vue'),
         },
         {
+          path: 'shop',
+          name: 'shop',
+          component: () => import(/* webpackChunkName: "shop" */ '@/views/ShopView.vue'),
+        },
+        {
+          path: 'shop/upload',
+          name: 'shop-upload',
+          component: () => import(/* webpackChunkName: "shop" */ '@/views/ShopUploadForm.vue'),
+          meta: { roles: ['ADMIN'] },
+        },
+        {
           path: 'users',
           name: 'users',
           component: () => import(/* webpackChunkName: "users" */ '@/views/UsersView.vue'),
           meta: { roles: ['ADMIN'] },
-        },
-        {
-          path: 'shop',
-          name: 'shop',
-          component: () => import(/* webpackChunkName: "shop" */ '@/views/ShopView.vue'),
         },
         {
           path: 'peminjaman',
