@@ -38,6 +38,17 @@ const router = createRouter({
           component: () => import(/* webpackChunkName: "barang" */ '@/views/BarangView.vue'),
         },
         {
+          path: 'shop',
+          name: 'shop',
+          component: () => import(/* webpackChunkName: "shop" */ '@/views/ShopView.vue'),
+        },
+        {
+          path: 'shop/upload',
+          name: 'shop-upload',
+          component: () => import(/* webpackChunkName: "shop" */ '@/views/ShopUploadForm.vue'),
+          meta: { roles: ['ADMIN'] },
+        },
+        {
           path: 'users',
           name: 'users',
           component: () => import(/* webpackChunkName: "users" */ '@/views/UsersView.vue'),
@@ -57,6 +68,22 @@ const router = createRouter({
           path: 'detail-peminjaman/:id',
           name: 'detail-peminjaman',
           component: () => import(/* webpackChunkName: "detail-peminjaman" */ '@/views/DetailPeminjamanView.vue'),
+        },
+        {
+          path: 'periodic-table',
+          name: 'periodic-table',
+          component: () => import(/* webpackChunkName: "periodic-table" */ '@/views/PeriodicTableView.vue'),
+        },
+        {
+          path: 'shop-manage',
+          name: 'shop-manage',
+          component: () => import(/* webpackChunkName: "shop-manage" */ '@/views/ShopManageView.vue'),
+          meta: { roles: ['ADMIN'] },
+        },
+        {
+          path: 'resources',
+          name: 'resources',
+          component: () => import(/* webpackChunkName: "resources" */ '@/views/ResourcesView.vue'),
         },
       ],
     },

@@ -9,6 +9,7 @@ import { useAutoRefresh } from '@/composables/useAutoRefresh'
 import { useRealtimeRefresh } from '@/composables/useRealtimeRefresh'
 import Modal from '@/components/ui/Modal.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
+import CalendarPicker from '@/components/ui/CalendarPicker.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import StatusBadge from '@/components/ui/StatusBadge.vue'
 import { formatDate, formatRupiah, capitalize } from '@/utils/format'
@@ -183,14 +184,8 @@ watch(refreshKey, () => load(true))
     <Modal v-model:open="modalOpen" title="Ajukan Peminjaman" size="lg">
       <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
         <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="text-xs font-semibold uppercase text-slate-500">Tgl Pinjam</label>
-            <input v-model="form.tglPinjam" type="date" required class="mt-1 w-full rounded-xl border py-2.5 px-3 text-sm dark:border-slate-700 dark:bg-slate-900/50" />
-          </div>
-          <div>
-            <label class="text-xs font-semibold uppercase text-slate-500">Tgl Kembali</label>
-            <input v-model="form.tglKembali" type="date" required class="mt-1 w-full rounded-xl border py-2.5 px-3 text-sm dark:border-slate-700 dark:bg-slate-900/50" />
-          </div>
+          <CalendarPicker v-model="form.tglPinjam" label="Tgl Pinjam" />
+          <CalendarPicker v-model="form.tglKembali" label="Tgl Kembali" />
         </div>
         <div>
           <label class="text-xs font-semibold uppercase text-slate-500">Catatan</label>

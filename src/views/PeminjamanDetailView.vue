@@ -29,7 +29,7 @@ const loading = ref(true)
 const actionLoading = ref(false)
 const peminjaman = ref<Peminjaman | null>(null)
 
-const returnKondisi = ref<Record<number, Kondisi>>({})
+const returnKondisi = ref<Record<number, { jumlahBaik: number; jumlahRusak: number }>>({})
 
 const id = Number(route.params.id)
 
@@ -38,7 +38,10 @@ async function load(silent = false) {
   try {
     peminjaman.value = await peminjamanApi.getById(id)
     peminjaman.value.details?.forEach((d) => {
-      returnKondisi.value[d.idDetail] = (d.kondisiKembali as Kondisi) || 'BAIK'
+      returnKondisi.value[d.idDetail] = {
+        jumlahBaik: d.jumlahBaik || d.jumlah,
+        jumlahRusak: d.jumlahRusak || 0,
+      }
     })
   } catch (e) {
     if (!silent) {
@@ -77,10 +80,14 @@ async function reject() {
 async function doReturn() {
   actionLoading.value = true
   const details: ReturnDetailPayload[] =
-    peminjaman.value?.details?.map((d) => ({
-      idDetail: d.idDetail,
-      kondisiKembali: returnKondisi.value[d.idDetail] ?? 'BAIK',
-    })) ?? []
+    peminjaman.value?.details?.map((d) => {
+      const k = returnKondisi.value[d.idDetail] ?? { jumlahBaik: d.jumlah, jumlahRusak: 0 }
+      return {
+        idDetail: d.idDetail,
+        jumlahBaik: k.jumlahBaik,
+        jumlahRusak: k.jumlahRusak,
+      }
+    }) ?? []
   try {
     peminjaman.value = await peminjamanApi.return(id, details)
     toast.show('Barang berhasil dikembalikan', 'success')
@@ -209,24 +216,44 @@ watch(refreshKey, () => load(true))
             <p class="text-xs font-medium text-emerald-600 dark:text-emerald-400 mt-0.5">
               Subtotal: {{ formatRupiah((d.barang.harga ?? 0) * d.jumlah) }}
             </p>
-            <p v-if="d.kondisiKembali" class="text-xs mt-1 text-emerald-600">
-              Kondisi kembali: {{ d.kondisiKembali }}
+            <p v-if="d.jumlahRusak > 0" class="text-xs mt-1 text-rose-600">
+              Rusak: {{ d.jumlahRusak }} unit · Baik: {{ d.jumlahBaik }} unit
+            </p>
+            <p v-else-if="d.jumlahBaik > 0" class="text-xs mt-1 text-emerald-600">
+              Semua kembali dalam kondisi baik
             </p>
           </div>
 
           <div
             v-if="auth.isStaff && ['DISETUJUI', 'DIPINJAM'].includes(peminjaman.status)"
-            class="flex items-center gap-2"
+            class="flex flex-col gap-1"
           >
-            <label class="text-xs text-slate-500">Kondisi:</label>
-            <select
-              v-model="returnKondisi[d.idDetail]"
-              class="rounded-lg border py-1.5 px-2 text-sm dark:border-slate-700 dark:bg-slate-900/50"
-            >
-              <option value="BAIK">Baik</option>
-              <option value="RUSAK_RINGAN">Rusak Ringan</option>
-              <option value="RUSAK_BERAT">Rusak Berat</option>
-            </select>
+            <label class="text-xs text-slate-500 font-semibold">Jumlah:</label>
+            <div class="flex items-center gap-2">
+              <div>
+                <span class="text-[10px] text-emerald-600 font-medium">Baik</span>
+                <input
+                  v-model.number="returnKondisi[d.idDetail].jumlahBaik"
+                  type="number"
+                  min="0"
+                  :max="d.jumlah"
+                  class="w-16 rounded-lg border py-1.5 px-2 text-sm dark:border-slate-700 dark:bg-slate-900/50"
+                  @input="returnKondisi[d.idDetail].jumlahRusak = d.jumlah - returnKondisi[d.idDetail].jumlahBaik"
+                />
+              </div>
+              <div>
+                <span class="text-[10px] text-rose-600 font-medium">Rusak</span>
+                <input
+                  v-model.number="returnKondisi[d.idDetail].jumlahRusak"
+                  type="number"
+                  min="0"
+                  :max="d.jumlah"
+                  class="w-16 rounded-lg border py-1.5 px-2 text-sm dark:border-slate-700 dark:bg-slate-900/50"
+                  @input="returnKondisi[d.idDetail].jumlahBaik = d.jumlah - returnKondisi[d.idDetail].jumlahRusak"
+                />
+              </div>
+              <span class="text-[10px] text-slate-400">/ {{ d.jumlah }}</span>
+            </div>
           </div>
 
           <button

@@ -1,5 +1,5 @@
 import { apiClient, unwrap } from './client'
-import type { ApiResponse, DetailPeminjaman, DetailPeminjamanPayload, Kondisi } from '@/types/api'
+import type { ApiResponse, DetailPeminjaman, DetailPeminjamanPayload } from '@/types/api'
 
 export const detailPeminjamanApi = {
   getById: (id: number) =>
@@ -10,10 +10,12 @@ export const detailPeminjamanApi = {
         params: { idPeminjaman },
       }),
     ),
-  updateKondisi: (id: number, kondisiKembali: Kondisi) =>
+  updateKondisi: (id: number, jumlahBaik: number, jumlahRusak: number) =>
     unwrap(
       apiClient.patch<ApiResponse<DetailPeminjaman>>(`/detail-peminjaman/${id}`, {
-        kondisiKembali,
+        idDetail: id,
+        jumlahBaik,
+        jumlahRusak,
       }),
     ),
   remove: (id: number) =>
